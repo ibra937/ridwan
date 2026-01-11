@@ -11,6 +11,8 @@ import { FacturesComponent } from './factures/factures';
 import { FactureDetailComponent } from './factures/facture-detail/facture-detail';
 import { ProduitsComponent } from './produits/produits';
 import { AddProduitComponent } from './produits/add-produit/add-produit';
+import { DashboardComponent } from './dashboard/dashboard';
+import { MouvementsComponent } from './mouvement/mouvement';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import { AddProduitComponent } from './produits/add-produit/add-produit';
     FacturesComponent,
     FactureDetailComponent,
     ProduitsComponent,
-    AddProduitComponent
+    AddProduitComponent,
+    DashboardComponent,
+    MouvementsComponent
   ],
   imports: [
     BrowserModule,

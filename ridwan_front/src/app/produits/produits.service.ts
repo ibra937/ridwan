@@ -14,6 +14,10 @@ export class ProduitsService {
     return this.http.get<any[]>(this.BASE_URL);
   }
 
+  getProduit(id: number): Observable<any> {
+    return this.http.get<any>(`${this.BASE_URL}/${id}`);
+  }
+
   updateProduit(id: number, produit: any): Observable<any> {
     return this.http.put<any>(`${this.BASE_URL}/${id}`, produit);
   }

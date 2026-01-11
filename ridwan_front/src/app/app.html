@@ -1,37 +1,68 @@
+<div class="navbar">
+
+  <div class="nav-left">
+    <span class="title" (click)="currentTab = 'dashboard'; menuOpen = false">Ridwan Dashboard</span>
+  </div>
+
+  <div class="nav-toggle" (click)="menuOpen = !menuOpen">
+    <i class="fa-solid fa-bars"></i>
+  </div>
+
+  <ul class="nav-links" [class.open]="menuOpen">
+    <li (click)="currentTab = 'stats'; menuOpen = false">
+      <i class="fa-solid fa-chart-line"></i> Statistiques
+    </li>
+
+    <li (click)="currentTab = 'mouvements'; menuOpen = false">
+      <i class="fa-solid fa-arrow-right-arrow-left"></i> Mouvements
+    </li>
+  </ul>
+</div>
+
+
 <div class="app-container">
 
   <!-- Contenu dynamique -->
   <div class="content">
     <ng-container [ngSwitch]="currentTab">
 
+      <app-dashboard 
+        *ngSwitchCase="'dashboard'">
+      </app-dashboard>
+
       <app-produits 
         *ngSwitchCase="'produits'"
-          (addProduit)="modifierProduit($event)"></app-produits>
+        (addProduit)="modifierProduit($event)">
+      </app-produits>
 
       <app-add-vente *ngSwitchCase="'add-vente'"></app-add-vente>
 
       <app-factures *ngSwitchCase="'factures'" 
         (openDetail)="ouvrirFactureDetail($event)">
       </app-factures>
-    
+
       <app-facture-details
-          *ngSwitchCase="'facture-detail'"
-          [factureId]="factureSelectionnee.id"
-          (retour)="currentTab = 'factures'">
+        *ngSwitchCase="'facture-detail'"
+        [factureId]="factureSelectionnee.id"
+        (retour)="currentTab = 'factures'">
       </app-facture-details>
 
       <app-add-produit 
         *ngSwitchCase="'add-produit'" 
-        [produitId]="produitSelectionnee ? produitSelectionnee.id : null"
+        [produitId]="produitSelectionnee?.id || null"
         (retour)="currentTab = 'produits'">
       </app-add-produit>
 
-    
-    </ng-container>
+      <app-mouvements 
+        *ngSwitchCase="'mouvements'">
+      </app-mouvements>
 
+      <div *ngSwitchCase="'stats'" class="placeholder">📊 Statistiques</div>
+
+    </ng-container>
   </div>
 
-  <!-- Bottom Navigation flottant -->
+  <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <button [class.active]="currentTab === 'produits'" (click)="currentTab = 'produits'">
       <i class="fa-solid fa-box"></i>
@@ -48,4 +79,5 @@
       Factures
     </button>
   </nav>
+
 </div>

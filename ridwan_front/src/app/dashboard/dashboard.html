@@ -1,0 +1,87 @@
+<div class="dashboard">
+
+  <!-- 🔵 KPI -->
+  <div class="kpi-grid">
+
+    <div class="kpi-card">
+      <i class="fa-solid fa-boxes"></i>
+      <div class="info">
+        <h3>{{ stats.totalProduits }}</h3>
+        <p>Produits</p>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <i class="fa-solid fa-money-bill-trend-up"></i>
+      <div class="info">
+        <h3>{{ stats.valeurStock | number:'1.0-0' }} FCFA</h3>
+        <p>Valeur du stock</p>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <i class="fa-solid fa-cash-register"></i>
+      <div class="info">
+        <h3>{{ stats.ventesAujourdHui }}</h3>
+        <p>Ventes aujourd’hui</p>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <i class="fa-solid fa-file-invoice"></i>
+      <div class="info">
+        <h3>{{ stats.totalFactures }}</h3>
+        <p>Factures totales</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 📈 Graphique ventes (7 jours) -->
+  <div class="chart-card">
+    <h2>Évolution des ventes (7 derniers jours)</h2>
+    <div class="chart-line">
+      <div *ngFor="let v of ventes7Jours" class="bar-wrapper">
+        <div class="bar" [style.height]="v.valeur * 12 + 'px'"></div>
+        <span class="label">{{ v.jour }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📊 Répartition du stock par catégorie -->
+  <div class="chart-card">
+    <h2>Répartition du stock</h2>
+    <div class="chart-bar">
+      <div *ngFor="let s of stockCategories" class="ligne">
+        <span class="cat-name">{{ s.cat }}</span>
+        <div class="bar-container">
+          <div class="bar" [style.width]="s.qty * 5 + 'px'"></div>
+        </div>
+        <b>{{ s.qty }}</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🟡 Activité récente -->
+  <div class="card">
+    <h2>Mouvements récents</h2>
+    <div class="mvt" *ngFor="let m of mouvements">
+      <span class="type" [class.entree]="m.type === 'Entrée'" [class.sortie]="m.type === 'Vente'">
+        {{ m.type }}
+      </span>
+      <span class="produit">{{ m.produit }}</span>
+      <span class="qty">{{ m.qty }}</span>
+      <span class="date">{{ m.date }}</span>
+    </div>
+  </div>
+
+  <!-- 🔴 Alertes stock faible -->
+  <div class="card alerts">
+    <h2>Alertes Stock Faible</h2>
+    <div class="alerte" *ngFor="let a of alertes">
+      <span class="produit">{{ a.produit }}</span>
+      <span class="stock">{{ a.stock }}</span>
+    </div>
+  </div>
+
+</div>

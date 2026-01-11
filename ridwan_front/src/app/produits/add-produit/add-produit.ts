@@ -67,6 +67,7 @@ export class AddProduitComponent implements OnInit {
         next: () => {
           alert('Produit ajouté avec succès !');
           this.produit = { code_produit: '', produit: '', prix: 0, quantite: 0, categorie: '' };
+          this.retour.emit();
         },
         error: (err) => {
           console.error(err);

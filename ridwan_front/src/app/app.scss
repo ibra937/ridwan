@@ -6,7 +6,7 @@ $text-dark: #1a1a1a;
 .app-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   background: $app-bg;
   font-family: 'Poppins', sans-serif;
 }
@@ -20,13 +20,13 @@ $text-dark: #1a1a1a;
 /* ----- Bottom Nav flottant ----- */
 .bottom-nav {
   position: fixed;
-  bottom: 16px;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 92%;
+  width: 98%;
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(14px);
-  border-radius: 18px;
+  border-radius: 12px;
   box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
   display: flex;
   justify-content: space-around;
@@ -71,3 +71,103 @@ $text-dark: #1a1a1a;
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+// 🎨 Colors
+$nav-bg: #ffffff;
+$primary: #006d77;
+$text-dark: #1a1a1a;
+
+// 🌐 Navbar
+.navbar {
+  height: 60px;
+  background: $nav-bg;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+/* Logo */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .logo {
+    height: 35px;
+  }
+
+  .title {
+    font-size: 18px;
+    font-weight: 600;
+    color: $text-dark;
+    cursor: pointer;
+    :hover {
+      transition: 0.2s;
+      color: $primary;
+      transform: scale(1.2);
+    }
+  }
+}
+
+/* Links */
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 25px;
+
+  li {
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: $text-dark;
+    transition: 0.15s ease;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+}
+
+/* Hamburger menu (mobile only) */
+.nav-toggle {
+  display: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background: white;
+    width: 200px;
+    flex-direction: column;
+    padding: 12px 0;
+    border-radius: 0 0 0 10px;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+    display: none;
+
+    li {
+      padding: 12px 18px;
+      width: 100%;
+    }
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+}
+

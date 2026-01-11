@@ -1,0 +1,60 @@
+<div class="mouvements-page">
+
+  <h1>Mouvements de stock</h1>
+
+  <!-- Chargement -->
+  <div class="loading" *ngIf="loading">
+    Chargement des mouvements...
+  </div>
+
+  <div class="mouvements-card">
+
+      <!-- En-tête -->
+      <div class="table-header">
+          <span>Type</span>
+          <span>Produit</span>
+          <span>Nom du produit</span>
+          <span>Catégorie</span>
+          <span>Quantité</span>
+          <span>Description</span>
+          <span>Date</span>
+        </div>
+        
+        <!-- Lignes -->
+        <div 
+        class="table-row"
+        [class.entree]="m.type_mouvement === 'ENTREE'"
+        [class.sortie]="m.type_mouvement === 'SORTIE'"
+        *ngFor="let m of mouvements">
+        
+        <span 
+        class="badge"
+        [class.entree]="m.type_mouvement === 'ENTREE'"
+        [class.sortie]="m.type_mouvement === 'SORTIE'">
+        {{ m.type_mouvement }}
+    </span>
+    
+    <span>{{ m.code_produit }}</span>
+    
+    <span>{{ m.produit }}</span>
+    
+    <span>{{ m.categorie }}</span>
+
+    <span>{{ m.quantite }}</span>
+
+    <span class="description">
+        {{ m.description || '—' }}
+    </span>
+
+    <span class="date">
+        {{ m.date_mouvement | date:'dd/MM/yyyy HH:mm' }}
+    </span>
+</div>
+
+</div>
+<!-- Vide -->
+<div class="empty" *ngIf="!loading && mouvements.length === 0">
+    Aucun mouvement trouvé.
+</div>
+
+</div>
