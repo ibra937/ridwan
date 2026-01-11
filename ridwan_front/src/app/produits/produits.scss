@@ -1,0 +1,168 @@
+.produits-container {
+  padding: 16px;
+  font-family: 'Poppins', sans-serif;
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #1d3557;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-add {
+      background: #2a9d8f;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      font-size: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      &:hover {
+        background: #21867a;
+      }
+    }
+
+    .btn-refresh {
+      background: #006d77;
+      color: white;
+      padding: 8px 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+
+      &:hover {
+        background: #00565e;
+      }
+    }
+  }
+
+  .loading {
+    height: 80vh;
+    font-size: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-items: center;
+    gap: 10px;
+    color: #008080;
+  }
+
+  .cards {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.08);
+
+      transition: 0.2s ease;
+
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0px 6px 16px rgba(0,0,0,0.12);
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #1d3557;
+        font-weight: 600;
+      }
+
+      .code {
+        margin: 4px 0;
+        font-size: 13px;
+        color: #6c757d;
+      }
+
+      .info {
+        display: flex;
+        gap: 14px;
+
+        .prix {
+          color: #2a9d8f;
+          font-weight: 600;
+          font-size: 16px;
+        }
+
+        .qte {
+          color: #e76f51;
+          font-weight: 600;
+          font-size: 16px;
+        }
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+
+        button {
+          border: none;
+          padding: 8px;
+          border-radius: 8px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 35px;
+          height: 35px;
+          font-size: 16px;
+        }
+
+        .btn-edit {
+          background: #ffca3a;
+          color: #402806;
+
+          &:hover {
+            background: #e0b02f;
+          }
+        }
+
+        .btn-delete {
+          background: #e63946;
+          color: white;
+
+          &:hover {
+            background: #c52834;
+          }
+        }
+      }
+    }
+  }
+
+  .empty {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 16px;
+    color: #777;
+
+    i {
+      font-size: 40px;
+      color: #ccc;
+      margin-bottom: 10px;
+    }
+  }
+}
+

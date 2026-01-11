@@ -1,0 +1,53 @@
+<div class="produits-container">
+
+  <div class="top-bar">
+    <h2>Produits</h2>
+
+    <div class="actions">
+      <button class="btn-add" (click)="addProduit.emit(null)">
+        <i class="fa-solid fa-plus"></i> Ajouter
+      </button>
+
+      <button class="btn-refresh" (click)="loadProduits()">
+        <i class="fa-solid fa-rotate"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- LISTE EN CARDS -->
+  <div class="cards" *ngIf="produits.length > 0">
+    <div class="card" *ngFor="let p of produits">
+
+      <div class="left">
+        <h3>{{ p.produit }}</h3>
+        <p class="code">Categorie : {{ p.categorie }}</p>
+
+        <div class="info">
+          <span class="prix">{{ p.prix }} CFA</span>
+          <span class="qte">Stock : {{ p.quantite }}</span>
+        </div>
+      </div>
+
+      <div class="right actions">
+        <button class="btn-edit" (click)="updateProduit(p)">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+
+        <button class="btn-delete" (click)="deleteProduit(p.id)">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div *ngIf="produits.length === 0 && !loading" class="empty">
+    <i class="fa-solid fa-box-open"></i>
+    Aucun produit trouvé.
+  </div>
+
+  
+  <div *ngIf="loading" class="loading">
+    <i class="fa-solid fa-spinner fa-spin"></i> Chargement...
+  </div>
+</div>

@@ -1,0 +1,98 @@
+.add-vente-container {
+  max-width: 500px;
+  margin: auto;
+  margin-bottom: 80px;
+  padding: 20px;
+}
+
+h2, h3 {
+  color: #008080;
+  margin-bottom: 12px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.produits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.produit-item {
+  display: flex;
+  justify-content: space-between;
+  background: #f2f7f7;
+  padding: 10px;
+  border-radius: 8px;
+  align-items: center;
+}
+
+.produit-item button {
+  background: #008080;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.ligne-vente {
+  display: flex;
+  justify-content: space-between;
+  background: #eef9f9;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.ligne-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.ligne-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ligne-right input {
+  width: 60px;
+}
+
+.delete-btn {
+  background: #ff4d4d;
+  border: none;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.total-global {
+  text-align: right;
+  margin-top: 15px;
+  font-size: 18px;
+}
+
+.submit-btn {
+  width: 100%;
+  background: #008080;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  margin-top: 15px;
+  cursor: pointer;
+}

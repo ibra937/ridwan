@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ticket de caisse</title>
+
+  <style>
+    /* FORMAT 80mm */
+    body {
+      width: 75mm;
+      margin: 0 auto;
+      padding: 5px;
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+      background: #fff;
+      color: #000;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .separator {
+      border-top: 1px dashed #000;
+      margin: 8px 0;
+    }
+
+    .line {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+    }
+
+    .bold {
+      font-weight: bold;
+    }
+
+    .total {
+      font-size: 15px;
+      font-weight: bold;
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      background: #1d3557;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Impression */
+    @media print {
+      button {
+        display: none;
+      }
+      body {
+        padding: 0;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="ticket">
+    <p class="center">Chargement...</p>
+  </div>
+
+  <button onclick="window.print()">Imprimer</button>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+
+    // ⚠️ ADAPTE TON URL API ICI
+    const API_URL = "http://localhost:8000/api/facture/" + id;  
+
+    async function loadTicket() {
+      const div = document.getElementById("ticket");
+
+      try {
+        const response = await fetch(API_URL);
+        const facture = await response.json();
+
+        div.innerHTML = `
+          <div class="center">
+            <div class="title">FACTURE</div>
+            <div>N° ${facture.numero_facture}</div>
+            <div>${new Date(facture.create_at).toLocaleString()}</div>
+            <div>Client : ${facture.client || 'Non défini'}</div>
+          </div>
+
+          <div class="separator"></div>
+
+          <div class="bold">Articles</div>
+          
+          ${facture.lignes
+            .map(
+              l => `
+                <div class="line">
+                  <span>${l.nom} x${l.quantite}</span>
+                  <span>${l.total}F</span>
+                </div>
+              `
+            )
+            .join("")}
+
+          <div class="separator"></div>
+
+          <div class="total">TOTAL : ${facture.total_prix} F CFA</div>
+
+          <div class="separator"></div>
+
+          <div class="center">
+            Merci pour votre achat !<br/>
+            À bientôt.
+          </div>
+        `;
+      } catch (e) {
+        div.innerHTML = "<p style='color:red'>Erreur chargement facture</p>";
+      }
+    }
+
+    loadTicket();
+  </script>
+
+</body>
+</html>

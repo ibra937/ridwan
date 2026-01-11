@@ -1,0 +1,55 @@
+<div class="factures-container">
+
+  <div class="header">
+    <h2>Factures</h2>
+
+    <input 
+      type="text" 
+      placeholder="Rechercher (numéro, client...)"
+      [(ngModel)]="search"
+      (input)="filtrerFactures()"
+      class="search-input"
+    />
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <i class="fa-solid fa-spinner fa-spin"></i> Chargement...
+  </div>
+
+  <div class="table-wrapper" *ngIf="!loading && facturesFiltrees.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th (click)="trier('numero_facture')">
+            Numéro 
+            <i class="fa-solid" [ngClass]="getSortIcon('numero_facture')"></i>
+          </th>
+
+          <th (click)="trier('client')">
+            Client 
+            <i class="fa-solid" [ngClass]="getSortIcon('client')"></i>
+          </th>
+
+          <th (click)="trier('total_prix')">
+            Total 
+            <i class="fa-solid" [ngClass]="getSortIcon('total_prix')"></i>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let f of facturesFiltrees" (click)="voirDetails(f)">
+          <td>{{ f.numero_facture }}</td>
+          <td>{{ f.client || 'Non défini' }}</td>
+          <td>{{ f.total_prix | number }} FCFA</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!loading && facturesFiltrees.length === 0" class="empty">
+    <i class="fa-solid fa-file-invoice"></i>
+    Aucune facture trouvée.
+  </div>
+
+</div>

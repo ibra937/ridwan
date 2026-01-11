@@ -1,0 +1,35 @@
+<div class="ticket-container" *ngIf="facture">
+  <div class="ticket-header">
+    <h2>FACTURE N° {{ facture.numero_facture }}</h2>
+    <p>Date : {{ facture.created_at | date:'short' }}</p>
+    <p>Client : <strong>{{ facture.client || 'Non défini' }}</strong></p>
+  </div>
+
+  <hr />
+
+  <div class="ticket-body">
+    <div class="ticket-line header">
+      <span>Produit</span>
+      <span>Qté</span>
+      <span>Prix</span>
+    </div>
+
+    <div class="ticket-line" *ngFor="let l of facture.ventes">
+      <span>{{ l.produit }}</span>
+      <span>{{ l.quantite }}</span>
+      <span>{{ l.total }} CFA</span>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="ticket-total">
+    Total : {{ facture.total_prix }} CFA
+  </div>
+
+  <button class="btn-retour" (click)="goBack()">Retour</button>
+</div>
+
+<div *ngIf="loading" class="loading">
+  <i class="fa-solid fa-spinner fa-spin"></i> Chargement...
+</div>

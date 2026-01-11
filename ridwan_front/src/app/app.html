@@ -1,0 +1,51 @@
+<div class="app-container">
+
+  <!-- Contenu dynamique -->
+  <div class="content">
+    <ng-container [ngSwitch]="currentTab">
+
+      <app-produits 
+        *ngSwitchCase="'produits'"
+          (addProduit)="modifierProduit($event)"></app-produits>
+
+      <app-add-vente *ngSwitchCase="'add-vente'"></app-add-vente>
+
+      <app-factures *ngSwitchCase="'factures'" 
+        (openDetail)="ouvrirFactureDetail($event)">
+      </app-factures>
+    
+      <app-facture-details
+          *ngSwitchCase="'facture-detail'"
+          [factureId]="factureSelectionnee.id"
+          (retour)="currentTab = 'factures'">
+      </app-facture-details>
+
+      <app-add-produit 
+        *ngSwitchCase="'add-produit'" 
+        [produitId]="produitSelectionnee ? produitSelectionnee.id : null"
+        (retour)="currentTab = 'produits'">
+      </app-add-produit>
+
+    
+    </ng-container>
+
+  </div>
+
+  <!-- Bottom Navigation flottant -->
+  <nav class="bottom-nav">
+    <button [class.active]="currentTab === 'produits'" (click)="currentTab = 'produits'">
+      <i class="fa-solid fa-box"></i>
+      Produits
+    </button>
+
+    <button [class.active]="currentTab === 'add-vente'" (click)="currentTab = 'add-vente'">
+      <i class="fa-solid fa-cash-register"></i>
+      Ventes
+    </button>
+
+    <button [class.active]="currentTab === 'factures'" (click)="currentTab = 'factures'">
+      <i class="fa-solid fa-file-invoice"></i>
+      Factures
+    </button>
+  </nav>
+</div>

@@ -1,0 +1,28 @@
+<div class="ventes-container">
+  <h2>Liste des Factures</h2>
+
+  <div *ngIf="loading" class="loading">
+    <i class="fa-solid fa-spinner fa-spin"></i> Chargement...
+  </div>
+
+  <div class="factures-list" *ngIf="!loading && factures.length > 0">
+    <div 
+      class="facture-card" 
+      *ngFor="let f of factures" 
+      (click)="voirFacture(f)"
+    >
+      <div class="facture-header">
+        <span><strong>Numéro :</strong> {{ f.numero_facture }}</span>
+        <span><strong>Total :</strong> {{ f.total_prix }} FCFA</span>
+      </div>
+      <div class="facture-client">
+        <strong>Client :</strong> {{ f.client || 'Non défini' }}
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && factures.length === 0" class="empty">
+    <i class="fa-solid fa-file-invoice"></i>
+    Aucune facture disponible.
+  </div>
+</div>

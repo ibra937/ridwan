@@ -1,0 +1,68 @@
+.add-produit-container {
+  padding: 20px;
+  font-family: 'Poppins', sans-serif;
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1d3557;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-size: 14px;
+      color: #1d3557;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    input {
+      padding: 10px 14px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #ced4da;
+      transition: 0.2s ease;
+
+      &:focus {
+        outline: none;
+        border-color: #2a9d8f;
+        box-shadow: 0 0 0 3px rgba(42,157,143,0.25);
+      }
+    }
+  }
+
+  .btn-submit {
+    margin-top: 10px;
+    background: #2a9d8f;
+    color: white;
+    padding: 12px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.2s ease;
+
+    &:hover {
+      background: #21867a;
+    }
+  }
+}

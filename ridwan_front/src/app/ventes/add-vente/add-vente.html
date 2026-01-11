@@ -1,0 +1,70 @@
+<div class="add-vente-container">
+  <h2>Nouvelle vente</h2>
+
+  <!-- FORMULAIRE -->
+  <form (ngSubmit)="validerVente()">
+
+    <!-- CLIENT -->
+    <div class="form-group">
+      <label>Nom du client</label>
+      <input 
+        type="text"
+        [(ngModel)]="client"
+        name="client"
+        placeholder="Entrer le nom du client"
+        required
+      />
+    </div>
+
+    <!-- LISTE DES PRODUITS DISPONIBLES -->
+    <h3>Produits disponibles</h3>
+    <div class="produits-list">
+      <div *ngFor="let p of produitsDisponibles" class="produit-item">
+        <span>{{ p.produit }}</span>
+        <button type="button" (click)="ajouterProduit(p)">Ajouter</button>
+      </div>
+    </div>
+
+    <!-- LIGNES DE LA VENTE -->
+    <h3>Produits sélectionnés</h3>
+    <div *ngFor="let l of lignes; let i = index" class="ligne-vente">
+
+      <div class="ligne-left">
+        <strong>{{ l.nom }}</strong>
+        <span class="prix">{{ l.prix }} FCFA</span>
+      </div>
+
+      <div class="ligne-right">
+
+        <div class="qty-controls">
+          <button type="button" (click)="changerQuantite(i, -1)">−</button>
+
+          <input
+            type="number"
+            min="1"
+            [(ngModel)]="l.quantite"
+            name="quantite{{i}}"
+            (input)="recalculer()"
+          />
+
+          <button type="button" (click)="changerQuantite(i, 1)">+</button>
+        </div>
+
+        <span class="total">{{ l.total }} FCFA</span>
+
+        <button type="button" class="delete-btn" (click)="supprimer(i)">
+          ✕
+        </button>
+      </div>
+
+    </div>
+
+    <!-- TOTAL GENERAL -->
+    <div class="total-global">
+      Total vente : <strong>{{ totalVente }} FCFA</strong>
+    </div>
+
+    <button type="submit" class="submit-btn">Valider la vente</button>
+
+  </form>
+</div>

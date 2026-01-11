@@ -1,0 +1,73 @@
+$app-bg: #f4f7f8;
+$primary: #006d77;
+$primary-light: #83c5be;
+$text-dark: #1a1a1a;
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: $app-bg;
+  font-family: 'Poppins', sans-serif;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ----- Bottom Nav flottant ----- */
+.bottom-nav {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(14px);
+  border-radius: 18px;
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+}
+
+.bottom-nav button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: $text-dark;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: 0.2s ease;
+
+  i {
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+
+  &:hover {
+    color: $primary;
+    transform: translateY(-2px);
+  }
+
+  &.active {
+    color: $primary;
+    font-weight: 600;
+
+    i {
+      transform: scale(1.15);
+    }
+  }
+}
+
+/* Fade animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
