@@ -91,6 +91,8 @@ class VenteController extends Controller
                 // Enregistrer le mouvement de stock
                 MouvementStock::create([
                     'code_produit'   => $produit->code_produit,
+                    'produit'       => $produit->produit,
+                    'categorie'    => $produit->categorie,
                     'type_mouvement' => 'SORTIE', // minuscule pour l'enum SQLite
                     'quantite'       => $item['quantite'],
                     'prix_unitaire'  => $item['prix_unitaire'],

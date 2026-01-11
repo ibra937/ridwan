@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('mouvement_stocks', function (Blueprint $table) {
             $table->id();
             $table->string('code_produit');
+            $table->string('produit')->nullable();
+            $table->string('categorie')->nullable();
             $table->enum('type_mouvement', ['ENTREE', 'SORTIE']);
             $table->integer('quantite');
             $table->decimal('prix_unitaire', 10, 2)->nullable();
@@ -24,6 +26,7 @@ return new class extends Migration
 
         Schema::table('mouvement_stocks', function (Blueprint $table) {
             $table->foreignId('user_id')->after('description')->nullable()->constrained('users')->onDelete('cascade');
+            $table->string('categorie')->nullable()->after('produit');
         });
 
         

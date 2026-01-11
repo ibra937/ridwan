@@ -19,6 +19,8 @@ class MouvementStockController extends Controller
         try {
             $validated = $request->validate([
                 'code_produit'   => 'required|string|exists:produits,code_produit',
+                'produit'       => 'nullable|string',
+                'categorie'    => 'nullable|string',
                 'type_mouvement' => 'required|in:ENTREE,SORTIE',
                 'quantite'       => 'required|integer|min:1',
                 'prix_unitaire'  => 'nullable|numeric|min:0',
@@ -60,6 +62,8 @@ class MouvementStockController extends Controller
         // 💾 Enregistrer le mouvement
         $mouvement = MouvementStock::create([
             'code_produit'   => $validated['code_produit'],
+            'produit'       => $validated['produit'] ?? $produit->produit,
+            'categorie'    => $validated['categorie'] ?? $produit->categorie,
             'type_mouvement' => $validated['type_mouvement'],
             'quantite'       => $validated['quantite'],
             'prix_unitaire'  => $validated['prix_unitaire'] ?? null,

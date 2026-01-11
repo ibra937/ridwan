@@ -45,6 +45,8 @@ class ProduitController extends Controller
             // On enregistre un mouvement d’entrée
             MouvementStock::create([
                 'code_produit' => $produit->code_produit,
+                'produit' => $produit->produit,
+                'categorie' => $produit->categorie,
                 'type_mouvement' => 'ENTREE',
                 'quantite' => $validated['quantite'],
                 'description' => 'Réapprovisionnement du stock existant',
@@ -63,6 +65,8 @@ class ProduitController extends Controller
         // On enregistre aussi le mouvement d’entrée initial
         MouvementStock::create([
             'code_produit' => $produit->code_produit,
+            'produit' => $produit->produit,
+            'categorie' => $produit->categorie,
             'type_mouvement' => 'ENTREE',
             'quantite' => $produit->quantite,
             'description' => 'Ajout initial du produit au stock',
