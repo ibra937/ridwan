@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FactureDetailService } from './facture-detail.service';
 import { DatePipe } from '@angular/common';
 
@@ -18,7 +18,8 @@ export class FactureDetailComponent implements OnInit {
   loading = false;
   
   constructor(
-    private factureDetailService: FactureDetailService
+    private factureDetailService: FactureDetailService,
+    private changeDetection: ChangeDetectorRef
   ) {}
   
   ngOnInit() {
@@ -38,6 +39,7 @@ export class FactureDetailComponent implements OnInit {
       next: (res: any) => {
         this.facture = res.facture;   // ✔️ IMPORTANT
         this.loading = false;
+        this.changeDetection.detectChanges();
       },
       error: err => {
         console.error("Erreur détail facture:", err);

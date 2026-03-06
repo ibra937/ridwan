@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { AddProduitService } from './add-produit.service';
 
 @Component({
@@ -20,7 +20,10 @@ export class AddProduitComponent implements OnInit {
     categorie: ''
   };
 
-  constructor(private addProduitService: AddProduitService) {}
+  constructor(
+    private addProduitService: AddProduitService,
+    private cd: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     console.log("Produit ID reçu:", this.produitId);
@@ -33,6 +36,7 @@ export class AddProduitComponent implements OnInit {
     this.addProduitService.getProduit(id).subscribe({
       next: (data) => {
         this.produit = data;
+        this.cd.detectChanges();
       },
       error: (err) => {
         console.error(err);
@@ -42,7 +46,7 @@ export class AddProduitComponent implements OnInit {
   }
 
   ajouterProduit() {
-    if (!this.produit.code_produit || !this.produit.produit) {
+    if (!this.produit.categorie || !this.produit.produit) {
       alert('Veuillez remplir tous les champs.');
       return;
     }

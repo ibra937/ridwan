@@ -11,7 +11,7 @@ export class VentesService {
   constructor(private http: HttpClient) {}
 
   getVentes(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.BASE_URL}/factures`);
+    return this.http.get<any[]>(`${this.BASE_URL}/ventes`);
   }
 
   getFactureDetails(id: number): Observable<any> {

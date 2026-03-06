@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { VentesService } from './ventes.service';
 
 @Component({
@@ -11,7 +11,10 @@ export class VentesComponent implements OnInit {
   factures: any[] = [];
   loading = false;
 
-  constructor(private ventesService: VentesService) {}
+  constructor(
+    private ventesService: VentesService,
+    private cd: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.loadFactures();
@@ -23,6 +26,7 @@ export class VentesComponent implements OnInit {
       next: (res) => {
         this.factures = res;
         this.loading = false;
+        this.cd.detectChanges();
       },
       error: (err) => {
         console.error(err);

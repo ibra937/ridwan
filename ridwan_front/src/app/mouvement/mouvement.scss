@@ -1,5 +1,6 @@
 .mouvements-page {
   padding: 20px;
+  margin-bottom: 80px;
 
   h1 {
     font-size: 22px;
@@ -25,7 +26,7 @@
   .table-header {
     text-align:center;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 2.2fr 1.2fr;
+    grid-template-columns: 1fr 1fr 1fr  1fr 2.2fr 1.2fr;
     padding: 10px 0;
     font-weight: 600;
     font-size: 14px;
@@ -39,9 +40,9 @@
   .table-row {
     text-align: center;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 2.2fr 1.2fr;
+    grid-template-columns: 1fr 1fr 1fr  1fr 2.2fr 1.2fr;
     padding: 12px 0;
-    margin: 10px 0;
+    margin: 3px 0;
     align-items: center;
     font-size: 14px;
     border-bottom: 1px solid #eee;
@@ -102,8 +103,9 @@
     }
 
     .table-row {
-      grid-template-columns: 1fr;
-      gap: 6px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      font-size: 12px;
       padding: 14px 0;
 
       span {

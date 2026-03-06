@@ -6,11 +6,6 @@
   <form (ngSubmit)="ajouterProduit()" class="card">
 
     <div class="form-group">
-      <label>Code produit</label>
-      <input type="text" [(ngModel)]="produit.code_produit" name="code_produit" required />
-    </div>
-
-    <div class="form-group">
       <label>Nom du produit</label>
       <input type="text" [(ngModel)]="produit.produit" name="produit" required />
     </div>

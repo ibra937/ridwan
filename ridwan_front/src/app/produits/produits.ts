@@ -1,4 +1,4 @@
-import { Component, OnInit, output } from '@angular/core';
+import { Component, OnInit, output, ChangeDetectorRef } from '@angular/core';
 import { ProduitsService } from './produits.service';
 import { Output, EventEmitter } from '@angular/core';
 
@@ -15,7 +15,10 @@ export class ProduitsComponent implements OnInit {
   produits: any[] = [];
   loading = false;
 
-  constructor(private produitsService: ProduitsService) {}
+  constructor(
+    private produitsService: ProduitsService,
+    private cd: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.loadProduits();
@@ -27,6 +30,8 @@ export class ProduitsComponent implements OnInit {
       next: (res) => {
         this.produits = res;
         this.loading = false;
+        this.cd.detectChanges(
+        );
       },
       error: (err) => {
         console.error(err);

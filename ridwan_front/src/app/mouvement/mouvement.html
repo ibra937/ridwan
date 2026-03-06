@@ -13,7 +13,6 @@
       <div class="table-header">
           <span>Type</span>
           <span>Produit</span>
-          <span>Nom du produit</span>
           <span>Catégorie</span>
           <span>Quantité</span>
           <span>Description</span>
@@ -32,24 +31,26 @@
         [class.entree]="m.type_mouvement === 'ENTREE'"
         [class.sortie]="m.type_mouvement === 'SORTIE'">
         {{ m.type_mouvement }}
-    </span>
-    
-    <span>{{ m.code_produit }}</span>
-    
-    <span>{{ m.produit }}</span>
-    
-    <span>{{ m.categorie }}</span>
+        </span>
 
-    <span>{{ m.quantite }}</span>
+        <span>{{ m.produit }}</span>
 
-    <span class="description">
-        {{ m.description || '—' }}
-    </span>
+        <span>{{ m.categorie }}</span>
 
-    <span class="date">
-        {{ m.date_mouvement | date:'dd/MM/yyyy HH:mm' }}
-    </span>
-</div>
+        <span class="badge"
+            [class.entree]="m.type_mouvement === 'ENTREE'"
+            [class.sortie]="m.type_mouvement === 'SORTIE'">
+            {{ m.quantite }}
+        </span>
+
+        <span class="description">
+            {{ m.description || '—' }}
+        </span>
+
+        <span class="date">
+            {{ m.date_mouvement | date:'dd/MM/yyyy HH:mm' }}
+        </span>
+    </div>
 
 </div>
 <!-- Vide -->

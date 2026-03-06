@@ -1,87 +1,119 @@
 <div class="dashboard">
 
-  <!-- 🔵 KPI -->
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Dashboard Analytique</h1>
+
+    <select [(ngModel)]="periodeSelectionnee"
+            (change)="changerPeriode()">
+      <option value="mois">Ce Mois</option>
+      <option value="trimestre">Ce Trimestre</option>
+      <option value="annee">Cette Année</option>
+    </select>
+  </div>
+
+  <!-- KPI -->
   <div class="kpi-grid">
 
-    <div class="kpi-card">
-      <i class="fa-solid fa-boxes"></i>
-      <div class="info">
-        <h3>{{ stats.totalProduits }}</h3>
-        <p>Produits</p>
-      </div>
+    <div class="kpi-card primary">
+      <span>Chiffre d'affaires</span>
+      <h2>{{ kpi.chiffreAffaires | number }} FCFA</h2>
+      <canvas id="sparkCA"></canvas>
     </div>
 
-    <div class="kpi-card">
-      <i class="fa-solid fa-money-bill-trend-up"></i>
-      <div class="info">
-        <h3>{{ stats.valeurStock | number:'1.0-0' }} FCFA</h3>
-        <p>Valeur du stock</p>
-      </div>
+    <div class="kpi-card success">
+      <span>Panier moyen</span>
+      <h2>{{ kpi.panierMoyen | number }} FCFA</h2>
+      <canvas id="sparkPanier"></canvas>
     </div>
 
-    <div class="kpi-card">
-      <i class="fa-solid fa-cash-register"></i>
-      <div class="info">
-        <h3>{{ stats.ventesAujourdHui }}</h3>
-        <p>Ventes aujourd’hui</p>
-      </div>
+    <div class="kpi-card info">
+      <span>Indice ventes</span>
+      <h2>{{ kpi.indiceVentes }}</h2>
+      <canvas id="sparkIndice"></canvas>
     </div>
 
-    <div class="kpi-card">
-      <i class="fa-solid fa-file-invoice"></i>
-      <div class="info">
-        <h3>{{ stats.totalFactures }}</h3>
-        <p>Factures totales</p>
-      </div>
+    <div class="kpi-card warning">
+      <span>Croissance annuelle</span>
+      <h2>{{ kpi.croissanceAnnuelle }} %</h2>
+      <canvas id="sparkCroissance"></canvas>
     </div>
 
   </div>
 
-  <!-- 📈 Graphique ventes (7 jours) -->
-  <div class="chart-card">
-    <h2>Évolution des ventes (7 derniers jours)</h2>
-    <div class="chart-line">
-      <div *ngFor="let v of ventes7Jours" class="bar-wrapper">
-        <div class="bar" [style.height]="v.valeur * 12 + 'px'"></div>
-        <span class="label">{{ v.jour }}</span>
+  <!-- RESUME EXECUTIF -->
+  <div class="resume-card">
+    <h3>Résumé Exécutif</h3>
+
+    <ul>
+      <li>📊 CA : {{ kpi.chiffreAffaires | number }} FCFA</li>
+
+      <li [ngClass]="variationCA >= 0 ? 'positive' : 'negative'">
+        {{ variationCA >= 0 ? '📈' : '📉' }}
+        Variation vs mois précédent : {{ variationCA }} %
+      </li>
+
+      <li>🔥 Jour le plus performant : {{ meilleurJour }}</li>
+      <li>🏆 Catégorie leader : {{ categorieLeader }}</li>
+      <li>⚠ Produits critiques : {{ alertesCritiques }}</li>
+    </ul>
+  </div>
+
+  <!-- GRAPHIQUES -->
+  <div class="charts">
+
+    <div class="chart-card">
+      <h3>Evolution CA</h3>
+      <canvas id="monthlyChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h3>Mois vs Mois Précédent</h3>
+      <canvas id="compareChart"></canvas>
+    </div>
+    
+    <div class="chart-card">
+      <h3>Top Produits</h3>
+      <canvas id="topProductsChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h3>CA par Catégorie</h3>
+      <canvas id="categoryChart"></canvas>
+    </div>
+
+  </div>
+
+  <!-- STOCK -->
+  <div class="stock-section">
+
+    <div class="chart-card">
+      <h3>Répartition du Stock</h3>
+      <canvas id="stockChart"></canvas>
+    </div>
+
+    <div class="alert-card">
+      <h3>Alertes Stock</h3>
+
+      <div *ngFor="let a of alertes" class="alert-item">
+
+        <span>
+          {{ a.produit }}
+          <span class="badge"
+                [ngClass]="a.critique ? 'badge-danger' : 'badge-warning'">
+            {{ a.critique ? 'RUPTURE' : 'CRITIQUE' }}
+          </span>
+        </span>
+
+        <strong>{{ a.stock }}</strong>
       </div>
-    </div>
-  </div>
 
-  <!-- 📊 Répartition du stock par catégorie -->
-  <div class="chart-card">
-    <h2>Répartition du stock</h2>
-    <div class="chart-bar">
-      <div *ngFor="let s of stockCategories" class="ligne">
-        <span class="cat-name">{{ s.cat }}</span>
-        <div class="bar-container">
-          <div class="bar" [style.width]="s.qty * 5 + 'px'"></div>
-        </div>
-        <b>{{ s.qty }}</b>
+      <div *ngIf="!alertes.length" class="no-alert">
+        Aucun stock critique 🎉
       </div>
-    </div>
-  </div>
 
-  <!-- 🟡 Activité récente -->
-  <div class="card">
-    <h2>Mouvements récents</h2>
-    <div class="mvt" *ngFor="let m of mouvements">
-      <span class="type" [class.entree]="m.type === 'Entrée'" [class.sortie]="m.type === 'Vente'">
-        {{ m.type }}
-      </span>
-      <span class="produit">{{ m.produit }}</span>
-      <span class="qty">{{ m.qty }}</span>
-      <span class="date">{{ m.date }}</span>
     </div>
-  </div>
 
-  <!-- 🔴 Alertes stock faible -->
-  <div class="card alerts">
-    <h2>Alertes Stock Faible</h2>
-    <div class="alerte" *ngFor="let a of alertes">
-      <span class="produit">{{ a.produit }}</span>
-      <span class="stock">{{ a.stock }}</span>
-    </div>
   </div>
 
 </div>

@@ -1,0 +1,71 @@
+<div class="dashboard">
+
+  <h1>Dashboard Analytique</h1>
+
+  <!-- FILTRE -->
+  <div class="filters">
+    <label>Période :</label>
+    <select [(ngModel)]="periodeSelectionnee" (change)="changerPeriode()">
+      <option value="mois">Ce Mois</option>
+      <option value="trimestre">Ce Trimestre</option>
+      <option value="annee">Cette Année</option>
+    </select>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-row">
+
+    <div class="kpi-card">
+      <span>Chiffre d'affaires</span>
+      <h2>{{ kpi.chiffreAffaires | number }} FCFA</h2>
+      <small [ngClass]="variationCA >= 0 ? 'positive' : 'negative'">
+        {{ variationCA }} %
+      </small>
+    </div>
+
+    <div class="kpi-card">
+      <span>Factures</span>
+      <h2>{{ kpi.totalFactures }}</h2>
+    </div>
+
+    <div class="kpi-card">
+      <span>Produits vendus</span>
+      <h2>{{ kpi.totalQuantiteVendue }}</h2>
+    </div>
+
+  </div>
+
+  <!-- SECTION PRINCIPALE -->
+  <div class="main-section">
+
+    <!-- Evolution -->
+    <div class="chart-container">
+      <h3>Évolution des ventes</h3>
+      <canvas id="monthlyChart"></canvas>
+    </div>
+
+    <!-- Top 5 Graph -->
+    <div class="chart-container">
+      <h3>Top 5 Produits</h3>
+      <canvas id="topProductsChart"></canvas>
+    </div>
+
+  </div>
+
+  <!-- Liste Produits -->
+  <div class="top-products-list">
+    <h3>Produits les plus vendus</h3>
+
+    <div *ngFor="let produit of topProduits" class="product-row">
+      <span>{{ produit.nom }}</span>
+      <strong>{{ produit.quantite }} unités</strong>
+
+      <div class="progress-bar">
+        <div class="progress-fill"
+             [style.width.%]="(produit.quantite / topProduits[0]?.quantite) * 100">
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

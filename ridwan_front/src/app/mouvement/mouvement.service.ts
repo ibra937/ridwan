@@ -12,9 +12,10 @@ export class MouvementsService {
   constructor(private http: HttpClient) {}
 
   // 📌 Tous les mouvements
-  getMouvements(): Observable<any> {
-    return this.http.get(this.baseUrl);
+  getMouvements(): Observable<any[]> {
+    return this.http.get<any[]>(this.baseUrl);
   }
+
 
   // 📌 Un mouvement
   getMouvement(id: number): Observable<any> {

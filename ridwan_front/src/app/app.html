@@ -57,7 +57,9 @@
         *ngSwitchCase="'mouvements'">
       </app-mouvements>
 
-      <div *ngSwitchCase="'stats'" class="placeholder">📊 Statistiques</div>
+      <app-stats
+        *ngSwitchCase="'stats'">
+      </app-stats>
 
     </ng-container>
   </div>

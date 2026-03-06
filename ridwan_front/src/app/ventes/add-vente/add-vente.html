@@ -1,92 +1,201 @@
 <div class="add-vente-container">
-
-  <h2>Nouvelle Vente</h2>
-
-  <!-- Client -->
-  <div class="input-zone">
-    <label>Client :</label>
-    <input
-      type="text"
-      [(ngModel)]="client"
-      placeholder="Nom du client"
-    />
-  </div>
-
-  <!-- Recherche produit -->
-  <h3>Ajouter un produit</h3>
-
-  <div class="select-zone">
-
-    <input 
-      type="text"
-      [(ngModel)]="search"
-      (input)="filterProduits()"
-      placeholder="Rechercher..."
-      class="search-input"
-    />
-
-    <select [(ngModel)]="selectedProduitId" class="select-product">
-      <option value="">-- Sélectionner --</option>
-
-      <option 
-        *ngFor="let p of filteredProduits"
-        [value]="p.id">
-        {{ p.code_produit }} - {{ p.produit }}
-      </option>
-    </select>
-
-    <button class="btn-add-select" (click)="ajouterProduitDepuisSelect()">
-      Ajouter
-    </button>
-
-  </div>
-
-  <!-- Liste des produits sélectionnés -->
-  <h3>Produits sélectionnés</h3>
-
-  <div *ngFor="let l of lignes; let i = index" class="ligne-vente">
-
-    <div class="infos">
-      <strong>{{ l.produit }}</strong>
-      <div class="small-meta">{{ l.code_produit }}</div>
+  <div class="header-card">
+    <div>
+      <h2>Nouvelle vente</h2>
+      <p class="subtitle">Mode caisse superette: recherche rapide + encaissement</p>
+      <p class="shortcut-hint">F2: recherche | Enter: ajouter | Ctrl+Enter: valider</p>
     </div>
 
-    <div class="controls">
+    <div class="header-stats">
+      <div class="stat-chip">
+        <span>Articles</span>
+        <strong>{{ totalArticles }}</strong>
+      </div>
+      <div class="stat-chip total-chip">
+        <span>Total</span>
+        <strong>{{ totalVente | number }} FCFA</strong>
+      </div>
+    </div>
+  </div>
 
-      <button (click)="changerQuantite(i, -1)">−</button>
+  <div class="panel">
+    <div class="form-grid">
+      <div class="field">
+        <label>Client (facultatif)</label>
+        <input
+          type="text"
+          [(ngModel)]="client"
+          placeholder="Comptoir / Nom client"
+        />
+      </div>
 
-      <input
-        type="number"
-        min="1"
-        [(ngModel)]="l.quantite"
-        (input)="recalculer()"
-      />
-
-      <button (click)="changerQuantite(i, 1)">+</button>
-
-      <span class="total">{{ l.total | number }} FCFA</span>
-
-      <button class="delete-btn" (click)="supprimer(i)">✕</button>
+      <div class="field">
+        <div class="field-head">
+          <label>Recherche produit</label>
+          <button
+            type="button"
+            class="scan-toggle"
+            [class.active]="modeScan"
+            (click)="toggleModeScan()">
+            {{ modeScan ? 'Mode scan: ON' : 'Mode scan: OFF' }}
+          </button>
+        </div>
+        <input
+          #searchInput
+          type="text"
+          [(ngModel)]="search"
+          (input)="onSearchInput()"
+          (keydown)="onSearchKeydown($event)"
+          [placeholder]="modeScan ? 'Scanner le code-barres...' : 'Code ou nom produit, puis Enter'"
+          class="search-input"
+        />
+      </div>
     </div>
 
+    <div class="fallback-wrap">
+      <button
+        type="button"
+        class="fallback-toggle"
+        [class.active]="fallbackOpen"
+        (click)="toggleFallback()">
+        Ajout manuel (fallback)
+      </button>
+
+      <div class="add-row fallback-row" *ngIf="fallbackOpen">
+        <select [(ngModel)]="selectedProduitId" class="select-product">
+          <option value="">Selectionner un produit</option>
+          <option
+            *ngFor="let p of filteredProduits"
+            [value]="p.id">
+            {{ p.code_produit }} - {{ p.produit }} ({{ p.prix | number }} FCFA)
+          </option>
+        </select>
+
+        <button class="btn-add-select" type="button" (click)="ajouterProduitDepuisSelect()">
+          Ajouter
+        </button>
+      </div>
+    </div>
+
+    <div class="quick-list" *ngIf="search && filteredProduits.length">
+      <button
+        *ngFor="let p of filteredProduits | slice:0:6; let idx = index"
+        class="quick-item"
+        [class.active]="idx === suggestionIndex"
+        (mouseenter)="suggestionIndex = idx"
+        (click)="ajouterProduit(p); resetRecherche(); focusSearch()">
+        <span>{{ p.code_produit }} - {{ p.produit }}</span>
+        <strong>{{ p.prix | number }} FCFA</strong>
+      </button>
+    </div>
+
+    <p class="message" *ngIf="message">{{ message }}</p>
+    <p class="scan-info" *ngIf="scanInfo">{{ scanInfo }}</p>
   </div>
 
-  <!-- Total -->
-  <div class="total-global">
-    Total : <strong>{{ totalVente | number }} FCFA</strong>
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Panier de vente</h3>
+      <button class="secondary-btn mini-action" type="button" (click)="annulerDernierAjout()">
+        Annuler dernier ajout
+      </button>
+    </div>
+
+    <div *ngIf="!lignes.length" class="empty-cart">
+      Aucun produit pour le moment.
+    </div>
+
+    <div
+      *ngFor="let l of lignes; let i = index; trackBy: trackByCode"
+      class="ligne-vente">
+
+      <div class="infos">
+        <strong>{{ l.produit }}</strong>
+        <div class="small-meta">{{ l.code_produit }}</div>
+      </div>
+
+      <div class="controls">
+        <div class="qty-control">
+          <button type="button" (click)="changerQuantite(i, -1)">-</button>
+          <input
+            type="number"
+            min="1"
+            [(ngModel)]="l.quantite"
+            (input)="recalculerLigne(l)"
+          />
+          <button type="button" (click)="changerQuantite(i, 1)">+</button>
+        </div>
+
+        <div class="price-input">
+          <label>PU</label>
+          <input
+            type="number"
+            min="0"
+            [(ngModel)]="l.prix_unitaire"
+            (input)="recalculerLigne(l)"
+          />
+        </div>
+
+        <div class="line-total">
+          <span>Total</span>
+          <strong>{{ l.total | number }} FCFA</strong>
+        </div>
+
+        <button class="delete-btn" type="button" (click)="supprimer(i)">X</button>
+      </div>
+    </div>
   </div>
 
-  <!-- Enregistrer -->
-  <button class="submit-btn" (click)="ouvrirConfirmation()">
-    Enregistrer la vente
-  </button>
+  <div class="panel encaissement">
+    <h3>Encaissement</h3>
 
+    <div class="encaissement-grid">
+      <div class="field">
+        <label>Montant recu</label>
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="montantRecu"
+          placeholder="0"
+        />
+
+        <div class="quick-cash">
+          <button type="button" class="cash-btn" (click)="definirMontantExact()">Exact</button>
+          <button type="button" class="cash-btn" (click)="arrondirMontant(500)">Arrondi 500</button>
+          <button type="button" class="cash-btn" (click)="arrondirMontant(1000)">Arrondi 1000</button>
+          <button
+            type="button"
+            class="cash-btn"
+            *ngFor="let m of quickMontants"
+            (click)="ajouterAuMontantRecu(m)">
+            +{{ m | number }}
+          </button>
+          <button type="button" class="cash-btn clear" (click)="effacerMontantRecu()">Effacer</button>
+        </div>
+      </div>
+
+      <div class="resume-box">
+        <div><span>A payer</span><strong>{{ totalVente | number }} FCFA</strong></div>
+        <div><span>Monnaie</span><strong>{{ monnaie | number }} FCFA</strong></div>
+        <div class="danger"><span>Reste</span><strong>{{ manque | number }} FCFA</strong></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="secondary-btn" type="button" (click)="viderPanier()">
+        Vider le panier
+      </button>
+      <button class="submit-btn" type="button" (click)="ouvrirConfirmation()">
+        Enregistrer la vente
+      </button>
+    </div>
+  </div>
 </div>
 
-<!-- Popup -->
 <div *ngIf="popup" class="popup-backdrop">
   <div class="popup">
-    <p>Confirmer l’enregistrement de la vente ?</p>
+    <h4>Confirmer la vente</h4>
+    <p>{{ totalArticles }} article(s) - {{ totalVente | number }} FCFA</p>
     <div class="popup-actions">
       <button class="cancel" (click)="fermerPopup()">Annuler</button>
       <button class="confirm" (click)="validerVente()">Confirmer</button>
@@ -94,7 +203,6 @@
   </div>
 </div>
 
-<!-- Loader -->
 <div *ngIf="loading" class="loader-backdrop">
   <div class="loader"></div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FacturesService } from './factures.service';
 import { Router } from '@angular/router';
 import { Output, EventEmitter } from '@angular/core';
@@ -26,7 +26,8 @@ export class FacturesComponent implements OnInit {
 
   constructor(
     private facturesService: FacturesService,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -42,10 +43,12 @@ export class FacturesComponent implements OnInit {
         this.factures = res;
         this.facturesFiltrees = [...this.factures];
         this.loading = false;
+        this.cd.detectChanges();
       },
       error: err => {
         console.error("Erreur chargement factures:", err);
         this.loading = false;
+        this.cd.detectChanges();
       }
     });
   }

@@ -8,6 +8,7 @@ import { ProduitsComponent } from './produits/produits';
 import { AddProduitComponent } from './produits/add-produit/add-produit';
 import { DashboardComponent } from './dashboard/dashboard';
 import { MouvementsComponent } from './mouvement/mouvement';
+import { StatsComponent } from './statistique/statistique';
 
 const routes: Routes = [
   { path: "", redirectTo: "ventes", pathMatch: "full" },
@@ -18,7 +19,8 @@ const routes: Routes = [
   { path: "produits", component: ProduitsComponent },
   { path: "add-produit", component: AddProduitComponent },
   { path: "dashboard", component: DashboardComponent },
-  { path: "mouvements", component: MouvementsComponent }
+  { path: "mouvements", component: MouvementsComponent },
+  { path: "stats", component: StatsComponent }
 ];
 
 @NgModule({

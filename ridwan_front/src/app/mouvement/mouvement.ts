@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MouvementsService } from './mouvement.service';
 import { ProduitsService } from '../produits/produits.service';
 import { catchError, map, Observable, of } from 'rxjs';
@@ -16,12 +16,13 @@ export class MouvementsComponent implements OnInit {
 
   constructor(
     private svc: MouvementsService,
-    private produitsSvc: ProduitsService
+    private produitsSvc: ProduitsService,
+    private changeDetection: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.loadMouvements();
-    this.loadProduits();
+    
   }
 
   loadMouvements() {
@@ -31,25 +32,17 @@ export class MouvementsComponent implements OnInit {
       next: (data) => {
         this.mouvements = data;
         this.loading = false;
+        this.changeDetection.detectChanges();
       },
       error: () => {
         alert('Erreur lors du chargement des mouvements');
         this.loading = false;
+        this.changeDetection.detectChanges();
       }
     });
   }
-
-  produitsMap: Record<number, string> = {};
-  loadProduits() {
-  this.produitsSvc.getProduits().subscribe({
-    next: (produits) => {
-      produits.forEach(p => {
-        this.produitsMap[p.id] = p.produit;
-      });
-    },
-    error: () => console.error('Erreur chargement produits')
-  });
-}
+  
+  
 
   /** 💰 Montant total du mouvement */
   getMontant(m: any): number {

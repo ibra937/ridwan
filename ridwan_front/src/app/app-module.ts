@@ -13,6 +13,7 @@ import { ProduitsComponent } from './produits/produits';
 import { AddProduitComponent } from './produits/add-produit/add-produit';
 import { DashboardComponent } from './dashboard/dashboard';
 import { MouvementsComponent } from './mouvement/mouvement';
+import { StatsComponent } from './statistique/statistique';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { MouvementsComponent } from './mouvement/mouvement';
     ProduitsComponent,
     AddProduitComponent,
     DashboardComponent,
-    MouvementsComponent
+    MouvementsComponent,
+    StatsComponent
   ],
   imports: [
     BrowserModule,

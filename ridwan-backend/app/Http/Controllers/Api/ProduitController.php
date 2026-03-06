@@ -25,58 +25,63 @@ class ProduitController extends Controller
     // 🔹 Ajouter un produit
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'code_produit' => 'required|string',
-            'produit' => 'required|string|max:255',
-            'quantite' => 'required|integer|min:1',
-            'prix' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'categorie' => 'required|string',
-        ]);
-
-        // 🔍 Vérifie si le produit existe déjà
-        $produit = Produit::where('code_produit', $validated['code_produit'])->first();
-
-        if ($produit) {
-            // 🔹 Cas 1 : le produit existe → on met à jour le stock
-            $produit->quantite += $validated['quantite'];
-            $produit->save();
-
-            // On enregistre un mouvement d’entrée
-            MouvementStock::create([
-                'code_produit' => $produit->code_produit,
-                'produit' => $produit->produit,
-                'categorie' => $produit->categorie,
-                'type_mouvement' => 'ENTREE',
-                'quantite' => $validated['quantite'],
-                'description' => 'Réapprovisionnement du stock existant',
-                'date_mouvement' => now(),
-            ]);
-
-            return response()->json([
-                'message' => 'Stock du produit mis à jour ✅',
-                'produit' => $produit
-            ], 200);
-        }
-
-        // 🔹 Cas 2 : le produit n’existe pas → on le crée
-        $produit = Produit::create($validated);
-
-        // On enregistre aussi le mouvement d’entrée initial
-        MouvementStock::create([
-            'code_produit' => $produit->code_produit,
-            'produit' => $produit->produit,
-            'categorie' => $produit->categorie,
-            'type_mouvement' => 'ENTREE',
-            'quantite' => $produit->quantite,
-            'description' => 'Ajout initial du produit au stock',
-            'date_mouvement' => now(),
-        ]);
-
-        return response()->json([
-            'message' => 'Nouveau produit ajouté avec succès ✅',
-            'produit' => $produit
-        ], 201);
+       $validated = $request->validate([
+           'produit' => 'required|string|max:255',
+           'quantite' => 'required|integer|min:1',
+           'prix' => 'required|numeric|min:0',
+           'description' => 'nullable|string',
+           'categorie' => 'required|string',
+       ]);
+    
+       // 🔹 Génération automatique du code produit
+       $codeProduit = strtoupper(
+           substr($validated['categorie'], 0, 3) . '-' .
+           substr(str_replace(' ', '', $validated['produit']), 0, 6)
+       );
+    
+       $validated['code_produit'] = $codeProduit;
+    
+       // 🔍 Vérifie si le produit existe déjà
+       $produit = Produit::where('code_produit', $codeProduit)->first();
+    
+       if ($produit) {
+           // Produit existant → mise à jour du stock
+           $produit->quantite += $validated['quantite'];
+           $produit->save();
+    
+           MouvementStock::create([
+               'code_produit' => $produit->code_produit,
+               'produit' => $produit->produit,
+               'categorie' => $produit->categorie,
+               'type_mouvement' => 'ENTREE',
+               'quantite' => $validated['quantite'],
+               'description' => 'Réapprovisionnement du stock existant',
+               'date_mouvement' => now(),
+           ]);
+    
+           return response()->json([
+               'message' => 'Stock du produit mis à jour ✅',
+               'produit' => $produit
+           ], 200);
+       }
+    
+       // Nouveau produit
+       $produit = Produit::create($validated);
+    
+       MouvementStock::create([
+           'code_produit' => $produit->code_produit,
+           'produit' => $produit->produit,
+           'categorie' => $produit->categorie,
+           'type_mouvement' => 'ENTREE',
+           'quantite' => $produit->quantite,
+           'description' => 'Ajout initial du produit au stock',
+           'date_mouvement' => now(),
+       ]);
+    
+       return response()->json([
+           'message' => 'Nouveau produit ajouté avec succès ✅',
+           'produit' => $produit
+       ], 201);
     }
 
 
