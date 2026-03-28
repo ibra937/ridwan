@@ -1,9 +1,5 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FacturesService } from './factures.service';
-import { Router } from '@angular/router';
-import { Output, EventEmitter } from '@angular/core';
-
-
 
 @Component({
   selector: 'app-factures',
@@ -12,69 +8,94 @@ import { Output, EventEmitter } from '@angular/core';
   standalone: false
 })
 export class FacturesComponent implements OnInit {
-  
   @Output() openDetail = new EventEmitter<any>();
 
   factures: any[] = [];
   facturesFiltrees: any[] = [];
   loading = false;
 
-  search: string = '';
-
-  triColonne: string = '';
-  triAsc: boolean = true;
+  search = '';
+  triColonne = 'numero_facture';
+  triAsc = false;
 
   constructor(
     private facturesService: FacturesService,
-    private router: Router,
     private cd: ChangeDetectorRef
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadFactures();
   }
 
-  /** Charger les factures depuis l'API */
-  loadFactures() {
+  get totalFactures(): number {
+    return this.facturesFiltrees.length;
+  }
+
+  get montantTotal(): number {
+    return this.facturesFiltrees.reduce((sum, f) => sum + (Number(f.total_prix) || 0), 0);
+  }
+
+  get totalClients(): number {
+    const set = new Set<string>();
+    this.facturesFiltrees.forEach((f) => {
+      if (f.client) set.add(String(f.client).trim().toLowerCase());
+    });
+    return set.size;
+  }
+
+  loadFactures(): void {
     this.loading = true;
 
     this.facturesService.getFactures().subscribe({
       next: (res: any) => {
-        this.factures = res;
-        this.facturesFiltrees = [...this.factures];
+        this.factures = (res || []).map((f: any) => ({
+          ...f,
+          total_prix: Number(f.total_prix) || 0
+        }));
+        this.appliquerFiltres();
         this.loading = false;
         this.cd.detectChanges();
       },
-      error: err => {
-        console.error("Erreur chargement factures:", err);
+      error: (err) => {
+        console.error('Erreur chargement factures:', err);
         this.loading = false;
         this.cd.detectChanges();
       }
     });
   }
 
-  /** Filtrer les factures en fonction de la recherche */
-  filtrerFactures() {
+  appliquerFiltres(): void {
     const q = this.search.trim().toLowerCase();
 
-    this.facturesFiltrees = this.factures.filter(f =>
-      f.numero_facture.toString().includes(q) ||
-      (f.client && f.client.toLowerCase().includes(q))
+    this.facturesFiltrees = this.factures.filter((f) =>
+      String(f.numero_facture || '').toLowerCase().includes(q) ||
+      String(f.client || '').toLowerCase().includes(q)
     );
+
+    this.trier(this.triColonne, false);
   }
 
-  /** Trier les colonnes */
-  trier(colonne: string) {
-    if (this.triColonne === colonne) {
-      this.triAsc = !this.triAsc;
-    } else {
-      this.triColonne = colonne;
-      this.triAsc = true;
+  trier(colonne: string, toggle = true): void {
+    if (toggle) {
+      if (this.triColonne === colonne) {
+        this.triAsc = !this.triAsc;
+      } else {
+        this.triColonne = colonne;
+        this.triAsc = true;
+      }
     }
 
     this.facturesFiltrees.sort((a, b) => {
-      const x = (a[colonne] ?? '').toString().toLowerCase();
-      const y = (b[colonne] ?? '').toString().toLowerCase();
+      let x: any = a[colonne];
+      let y: any = b[colonne];
+
+      if (colonne === 'total_prix') {
+        x = Number(x) || 0;
+        y = Number(y) || 0;
+      } else {
+        x = String(x ?? '').toLowerCase();
+        y = String(y ?? '').toLowerCase();
+      }
 
       if (x < y) return this.triAsc ? -1 : 1;
       if (x > y) return this.triAsc ? 1 : -1;
@@ -82,15 +103,12 @@ export class FacturesComponent implements OnInit {
     });
   }
 
-  /** Retourner l’icône à afficher */
-  getSortIcon(colonne: string) {
+  getSortIcon(colonne: string): string {
     if (this.triColonne !== colonne) return 'fa-sort';
     return this.triAsc ? 'fa-arrow-up' : 'fa-arrow-down';
   }
 
-  /** Ouvrir les détails d'une facture */
-  voirDetails(facture: any) {
+  voirDetails(facture: any): void {
     this.openDetail.emit(facture);
   }
-
 }

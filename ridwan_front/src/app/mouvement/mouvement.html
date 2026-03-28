@@ -1,61 +1,76 @@
 <div class="mouvements-page">
+  <section class="header-card">
+    <div>
+      <h2>Mouvements de stock</h2>
+      <p>Historique des entrees et sorties sur le stock magasin.</p>
+    </div>
+    <button class="btn-refresh" type="button" (click)="loadMouvements()">
+      <i class="fa-solid fa-rotate"></i>
+      Actualiser
+    </button>
+  </section>
 
-  <h1>Mouvements de stock</h1>
+  <section class="stats-row">
+    <article>
+      <span>Total mouvements</span>
+      <strong>{{ mouvementsFiltres.length }}</strong>
+    </article>
+    <article>
+      <span>Entrees</span>
+      <strong class="in">{{ totalEntrees }}</strong>
+    </article>
+    <article>
+      <span>Sorties</span>
+      <strong class="out">{{ totalSorties }}</strong>
+    </article>
+  </section>
 
-  <!-- Chargement -->
+  <section class="filters">
+    <input
+      type="text"
+      [(ngModel)]="search"
+      (input)="appliquerFiltres()"
+      placeholder="Rechercher produit, categorie ou description" />
+
+    <select [(ngModel)]="typeFilter" (change)="appliquerFiltres()">
+      <option value="all">Tous les types</option>
+      <option value="ENTREE">Entree</option>
+      <option value="SORTIE">Sortie</option>
+    </select>
+  </section>
+
   <div class="loading" *ngIf="loading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
     Chargement des mouvements...
   </div>
 
-  <div class="mouvements-card">
-
-      <!-- En-tête -->
-      <div class="table-header">
-          <span>Type</span>
-          <span>Produit</span>
-          <span>Catégorie</span>
-          <span>Quantité</span>
-          <span>Description</span>
-          <span>Date</span>
-        </div>
-        
-        <!-- Lignes -->
-        <div 
-        class="table-row"
-        [class.entree]="m.type_mouvement === 'ENTREE'"
-        [class.sortie]="m.type_mouvement === 'SORTIE'"
-        *ngFor="let m of mouvements">
-        
-        <span 
-        class="badge"
-        [class.entree]="m.type_mouvement === 'ENTREE'"
-        [class.sortie]="m.type_mouvement === 'SORTIE'">
-        {{ m.type_mouvement }}
-        </span>
-
-        <span>{{ m.produit }}</span>
-
-        <span>{{ m.categorie }}</span>
-
-        <span class="badge"
-            [class.entree]="m.type_mouvement === 'ENTREE'"
-            [class.sortie]="m.type_mouvement === 'SORTIE'">
-            {{ m.quantite }}
-        </span>
-
-        <span class="description">
-            {{ m.description || '—' }}
-        </span>
-
-        <span class="date">
-            {{ m.date_mouvement | date:'dd/MM/yyyy HH:mm' }}
-        </span>
+  <section class="table-card" *ngIf="!loading && mouvementsFiltres.length">
+    <div class="table-header">
+      <span>Type</span>
+      <span>Produit</span>
+      <span>Categorie</span>
+      <span>Quantite</span>
+      <span>Description</span>
+      <span>Date</span>
     </div>
 
-</div>
-<!-- Vide -->
-<div class="empty" *ngIf="!loading && mouvements.length === 0">
-    Aucun mouvement trouvé.
-</div>
+    <article
+      class="table-row"
+      *ngFor="let m of mouvementsFiltres"
+      [class.entree]="m.type_mouvement === 'ENTREE'"
+      [class.sortie]="m.type_mouvement === 'SORTIE'">
+      <span class="badge" [class.entree]="m.type_mouvement === 'ENTREE'" [class.sortie]="m.type_mouvement === 'SORTIE'">
+        {{ m.type_mouvement }}
+      </span>
+      <span>{{ m.produit }}</span>
+      <span>{{ m.categorie || '-' }}</span>
+      <span class="qty">{{ m.quantite }}</span>
+      <span class="desc">{{ m.description || '-' }}</span>
+      <span class="date">{{ m.date_mouvement | date:'dd/MM/yyyy HH:mm' }}</span>
+    </article>
+  </section>
 
+  <div class="empty" *ngIf="!loading && !mouvementsFiltres.length">
+    Aucun mouvement trouve.
+  </div>
 </div>

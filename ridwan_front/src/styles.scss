@@ -1,6 +1,27 @@
-/* You can add global styles to this file, and also import other style files */
-body, html {
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', 'Poppins', sans-serif;
+  color: #102928;
+  background: #f2f6f7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }

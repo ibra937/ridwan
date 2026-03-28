@@ -1,85 +1,88 @@
-<div class="navbar">
+<div class="app-shell">
+  <header class="topbar">
+    <button class="brand" (click)="goTo('dashboard')">
+      <span class="brand-dot"></span>
+      Ridwan POS
+    </button>
 
-  <div class="nav-left">
-    <span class="title" (click)="currentTab = 'dashboard'; menuOpen = false">Ridwan Dashboard</span>
+    <nav class="top-nav">
+      <button [class.active]="currentTab === 'dashboard'" (click)="goTo('dashboard')">Dashboard</button>
+      <button [class.active]="currentTab === 'produits'" (click)="goTo('produits')">Produits</button>
+      <button [class.active]="currentTab === 'add-vente'" (click)="goTo('add-vente')">Caisse</button>
+      <button [class.active]="currentTab === 'factures'" (click)="goTo('factures')">Factures</button>
+      <button [class.active]="currentTab === 'mouvements'" (click)="goTo('mouvements')">Mouvements</button>
+      <button [class.active]="currentTab === 'stats'" (click)="goTo('stats')">Stats</button>
+    </nav>
+
+    <button class="menu-toggle" (click)="menuOpen = !menuOpen" aria-label="Ouvrir le menu">
+      <i class="fa-solid" [ngClass]="menuOpen ? 'fa-xmark' : 'fa-bars'"></i>
+    </button>
+  </header>
+
+  <div class="mobile-menu" [class.open]="menuOpen">
+    <button [class.active]="currentTab === 'dashboard'" (click)="goTo('dashboard')">Dashboard</button>
+    <button [class.active]="currentTab === 'produits'" (click)="goTo('produits')">Produits</button>
+    <button [class.active]="currentTab === 'add-produit'" (click)="goTo('add-produit')">Nouveau produit</button>
+    <button [class.active]="currentTab === 'add-vente'" (click)="goTo('add-vente')">Caisse</button>
+    <button [class.active]="currentTab === 'factures'" (click)="goTo('factures')">Factures</button>
+    <button [class.active]="currentTab === 'mouvements'" (click)="goTo('mouvements')">Mouvements</button>
+    <button [class.active]="currentTab === 'stats'" (click)="goTo('stats')">Statistiques</button>
   </div>
 
-  <div class="nav-toggle" (click)="menuOpen = !menuOpen">
-    <i class="fa-solid fa-bars"></i>
-  </div>
-
-  <ul class="nav-links" [class.open]="menuOpen">
-    <li (click)="currentTab = 'stats'; menuOpen = false">
-      <i class="fa-solid fa-chart-line"></i> Statistiques
-    </li>
-
-    <li (click)="currentTab = 'mouvements'; menuOpen = false">
-      <i class="fa-solid fa-arrow-right-arrow-left"></i> Mouvements
-    </li>
-  </ul>
-</div>
-
-
-<div class="app-container">
-
-  <!-- Contenu dynamique -->
-  <div class="content">
+  <main class="main-content">
     <ng-container [ngSwitch]="currentTab">
+      <app-dashboard *ngSwitchCase="'dashboard'"></app-dashboard>
 
-      <app-dashboard 
-        *ngSwitchCase="'dashboard'">
-      </app-dashboard>
-
-      <app-produits 
+      <app-produits
         *ngSwitchCase="'produits'"
         (addProduit)="modifierProduit($event)">
       </app-produits>
 
+      <app-add-produit
+        *ngSwitchCase="'add-produit'"
+        [produitId]="produitSelectionnee?.id || null"
+        (retour)="goTo('produits')">
+      </app-add-produit>
+
       <app-add-vente *ngSwitchCase="'add-vente'"></app-add-vente>
 
-      <app-factures *ngSwitchCase="'factures'" 
+      <app-factures
+        *ngSwitchCase="'factures'"
         (openDetail)="ouvrirFactureDetail($event)">
       </app-factures>
 
       <app-facture-details
         *ngSwitchCase="'facture-detail'"
-        [factureId]="factureSelectionnee.id"
-        (retour)="currentTab = 'factures'">
+        [factureId]="factureSelectionnee?.id"
+        (retour)="goTo('factures')">
       </app-facture-details>
 
-      <app-add-produit 
-        *ngSwitchCase="'add-produit'" 
-        [produitId]="produitSelectionnee?.id || null"
-        (retour)="currentTab = 'produits'">
-      </app-add-produit>
+      <app-mouvements *ngSwitchCase="'mouvements'"></app-mouvements>
 
-      <app-mouvements 
-        *ngSwitchCase="'mouvements'">
-      </app-mouvements>
-
-      <app-stats
-        *ngSwitchCase="'stats'">
-      </app-stats>
-
+      <app-stats *ngSwitchCase="'stats'"></app-stats>
     </ng-container>
-  </div>
+  </main>
 
-  <!-- Bottom Navigation -->
   <nav class="bottom-nav">
-    <button [class.active]="currentTab === 'produits'" (click)="currentTab = 'produits'">
-      <i class="fa-solid fa-box"></i>
+    <button [class.active]="currentTab === 'dashboard'" (click)="goTo('dashboard')">
+      <i class="fa-solid fa-house"></i>
+      Accueil
+    </button>
+    <button [class.active]="currentTab === 'produits'" (click)="goTo('produits')">
+      <i class="fa-solid fa-boxes-stacked"></i>
       Produits
     </button>
-
-    <button [class.active]="currentTab === 'add-vente'" (click)="currentTab = 'add-vente'">
+    <button [class.active]="currentTab === 'add-vente'" (click)="goTo('add-vente')">
       <i class="fa-solid fa-cash-register"></i>
-      Ventes
+      Caisse
     </button>
-
-    <button [class.active]="currentTab === 'factures'" (click)="currentTab = 'factures'">
+    <button [class.active]="currentTab === 'factures'" (click)="goTo('factures')">
       <i class="fa-solid fa-file-invoice"></i>
       Factures
     </button>
+    <button [class.active]="currentTab === 'stats'" (click)="goTo('stats')">
+      <i class="fa-solid fa-chart-column"></i>
+      Stats
+    </button>
   </nav>
-
 </div>

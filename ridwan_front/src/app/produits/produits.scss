@@ -1,168 +1,233 @@
-.produits-container {
+.produits-page {
+  display: grid;
+  gap: 12px;
+}
+
+.header-card {
+  border: 1px solid #d3e4e3;
+  border-radius: 16px;
+  background: linear-gradient(120deg, #ffffff, #f4fbfb);
   padding: 16px;
-  font-family: 'Poppins', sans-serif;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
 
-  .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.header-card h2 {
+  margin: 0;
+  font-size: 24px;
+}
 
-    h2 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: 600;
-      color: #1d3557;
-    }
+.header-card p {
+  margin: 6px 0 0;
+  color: #597574;
+  font-size: 14px;
+}
 
-    .actions {
-      display: flex;
-      gap: 10px;
-    }
+.actions {
+  display: flex;
+  gap: 8px;
+}
 
-    .btn-add {
-      background: #2a9d8f;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      font-size: 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+.btn {
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 10px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
 
-      &:hover {
-        background: #21867a;
-      }
-    }
+.btn-primary {
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  color: #fff;
+}
 
-    .btn-refresh {
-      background: #006d77;
-      color: white;
-      padding: 8px 10px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+.btn-soft {
+  background: #ecf4f4;
+  color: #2f5251;
+}
 
-      &:hover {
-        background: #00565e;
-      }
-    }
-  }
+.btn-danger {
+  background: #ffe7e5;
+  color: #ae2a2a;
+}
 
-  .loading {
-    height: 80vh;
-    font-size: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    align-items: center;
-    gap: 10px;
-    color: #008080;
-  }
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
 
-  .cards {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+.stat-card {
+  border: 1px solid #dbe9e9;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
+  display: grid;
+  gap: 2px;
+}
 
-    .card {
-      background: #ffffff;
-      border-radius: 14px;
-      padding: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.08);
+.stat-card span {
+  font-size: 12px;
+  color: #627c7b;
+}
 
-      transition: 0.2s ease;
+.stat-card strong {
+  font-size: 22px;
+}
 
-      &:hover {
-        transform: translateY(-3px);
-        box-shadow: 0px 6px 16px rgba(0,0,0,0.12);
-      }
+.stat-card.warn strong {
+  color: #a16207;
+}
 
-      h3 {
-        margin: 0;
-        font-size: 18px;
-        color: #1d3557;
-        font-weight: 600;
-      }
+.stat-card.danger strong {
+  color: #b91c1c;
+}
 
-      .code {
-        margin: 4px 0;
-        font-size: 13px;
-        color: #6c757d;
-      }
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  gap: 8px;
+}
 
-      .info {
-        display: flex;
-        gap: 14px;
+.filters input,
+.filters select {
+  border: 1px solid #cfe1e1;
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px 12px;
+}
 
-        .prix {
-          color: #2a9d8f;
-          font-weight: 600;
-          font-size: 16px;
-        }
+.loading,
+.empty {
+  border: 1px dashed #cadede;
+  border-radius: 12px;
+  text-align: center;
+  padding: 20px;
+  color: #5f7c7b;
+}
 
-        .qte {
-          color: #e76f51;
-          font-weight: 600;
-          font-size: 16px;
-        }
-      }
+.loading {
+  display: grid;
+  gap: 8px;
+}
 
-      .actions {
-        display: flex;
-        gap: 10px;
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
 
-        button {
-          border: none;
-          padding: 8px;
-          border-radius: 8px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 35px;
-          height: 35px;
-          font-size: 16px;
-        }
+.card {
+  background: #fff;
+  border: 1px solid #dbe9e9;
+  border-radius: 14px;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
 
-        .btn-edit {
-          background: #ffca3a;
-          color: #402806;
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
 
-          &:hover {
-            background: #e0b02f;
-          }
-        }
+.card-top h3 {
+  margin: 0;
+  font-size: 16px;
+}
 
-        .btn-delete {
-          background: #e63946;
-          color: white;
+.card-top p {
+  margin: 4px 0 0;
+  color: #617d7c;
+  font-size: 12px;
+}
 
-          &:hover {
-            background: #c52834;
-          }
-        }
-      }
-    }
-  }
+.categorie {
+  border-radius: 999px;
+  background: #e9f5f4;
+  color: #0f766e;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  height: fit-content;
+}
 
-  .empty {
-    margin-top: 40px;
-    text-align: center;
-    font-size: 16px;
-    color: #777;
+.meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
 
-    i {
-      font-size: 40px;
-      color: #ccc;
-      margin-bottom: 10px;
-    }
+.meta div {
+  border: 1px solid #e8f0f0;
+  border-radius: 10px;
+  padding: 8px;
+  display: grid;
+  gap: 3px;
+}
+
+.meta span {
+  font-size: 11px;
+  color: #688281;
+}
+
+.meta strong {
+  font-size: 16px;
+}
+
+.stock-ok {
+  color: #15803d;
+}
+
+.stock-low {
+  color: #a16207;
+}
+
+.stock-zero {
+  color: #b91c1c;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 980px) {
+  .cards,
+  .stats-row {
+    grid-template-columns: 1fr;
   }
 }
 
+@media (max-width: 760px) {
+  .header-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .card-actions {
+    justify-content: stretch;
+    flex-direction: column;
+  }
+
+  .card-actions .btn {
+    justify-content: center;
+  }
+}

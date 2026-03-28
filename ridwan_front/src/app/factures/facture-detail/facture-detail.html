@@ -1,35 +1,40 @@
-<div class="ticket-container" *ngIf="facture">
-  <div class="ticket-header">
-    <h2>FACTURE N° {{ facture.numero_facture }}</h2>
-    <p>Date : {{ facture.created_at | date:'short' }}</p>
-    <p>Client : <strong>{{ facture.client || 'Non défini' }}</strong></p>
-  </div>
+<div class="facture-detail-page" *ngIf="facture">
+  <section class="detail-card">
+    <header class="detail-header">
+      <div>
+        <h2>Facture {{ facture.numero_facture }}</h2>
+        <p>Date: {{ facture.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
+        <p>Client: <strong>{{ facture.client || 'Client comptoir' }}</strong></p>
+      </div>
 
-  <hr />
+      <button class="btn-back" type="button" (click)="goBack()">
+        <i class="fa-solid fa-arrow-left"></i>
+        Retour
+      </button>
+    </header>
 
-  <div class="ticket-body">
-    <div class="ticket-line header">
-      <span>Produit</span>
-      <span>Qté</span>
-      <span>Prix</span>
+    <div class="lines-table">
+      <div class="line head">
+        <span>Produit</span>
+        <span>Quantite</span>
+        <span>Total ligne</span>
+      </div>
+
+      <div class="line" *ngFor="let l of facture.ventes">
+        <span>{{ l.produit }}</span>
+        <span>{{ l.quantite }}</span>
+        <span>{{ l.total | number }} FCFA</span>
+      </div>
     </div>
 
-    <div class="ticket-line" *ngFor="let l of facture.ventes">
-      <span>{{ l.produit }}</span>
-      <span>{{ l.quantite }}</span>
-      <span>{{ l.total }} CFA</span>
-    </div>
-  </div>
-
-  <hr />
-
-  <div class="ticket-total">
-    Total : {{ facture.total_prix }} CFA
-  </div>
-
-  <button class="btn-retour" (click)="goBack()">Retour</button>
+    <footer class="detail-footer">
+      <span>Total facture</span>
+      <strong>{{ facture.total_prix | number }} FCFA</strong>
+    </footer>
+  </section>
 </div>
 
 <div *ngIf="loading" class="loading">
-  <i class="fa-solid fa-spinner fa-spin"></i> Chargement...
+  <i class="fa-solid fa-spinner fa-spin"></i>
+  Chargement de la facture...
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { VentesService } from './ventes.service';
 
 @Component({
@@ -9,7 +9,9 @@ import { VentesService } from './ventes.service';
 })
 export class VentesComponent implements OnInit {
   factures: any[] = [];
+  facturesFiltrees: any[] = [];
   loading = false;
+  search = '';
 
   constructor(
     private ventesService: VentesService,
@@ -20,11 +22,15 @@ export class VentesComponent implements OnInit {
     this.loadFactures();
   }
 
-  loadFactures() {
+  loadFactures(): void {
     this.loading = true;
     this.ventesService.getVentes().subscribe({
       next: (res) => {
-        this.factures = res;
+        this.factures = (res || []).map((f: any) => ({
+          ...f,
+          total_prix: Number(f.total_prix) || 0
+        }));
+        this.appliquerFiltres();
         this.loading = false;
         this.cd.detectChanges();
       },
@@ -36,9 +42,15 @@ export class VentesComponent implements OnInit {
     });
   }
 
-  voirFacture(facture: any) {
-    // redirection vers facture details, par exemple via un routeur Angular
-    // this.router.navigate(['/facture', facture.id]);
+  appliquerFiltres(): void {
+    const term = this.search.trim().toLowerCase();
+    this.facturesFiltrees = this.factures.filter((f) =>
+      String(f.numero_facture || '').toLowerCase().includes(term) ||
+      String(f.client || '').toLowerCase().includes(term)
+    );
+  }
+
+  voirFacture(facture: any): void {
     alert(`Voir la facture ${facture.numero_facture}`);
   }
 }

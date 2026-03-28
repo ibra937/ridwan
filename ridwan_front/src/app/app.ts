@@ -42,7 +42,11 @@ export class AppComponent {
   }
 
   /** Navigation depuis la navbar */
-  goTo(tab: any) {
+  goTo(tab: AppComponent['currentTab']) {
+    if (tab === 'add-produit') {
+      this.produitSelectionnee = null;
+    }
+
     this.currentTab = tab;
     this.menuOpen = false;
   }

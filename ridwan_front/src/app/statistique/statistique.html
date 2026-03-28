@@ -1,71 +1,68 @@
-<div class="dashboard">
+<div class="stats-page">
+  <section class="stats-head">
+    <div>
+      <h1>Statistiques avancees</h1>
+      <p>Suivi rapide des volumes de vente sur la periode choisie.</p>
+    </div>
 
-  <h1>Dashboard Analytique</h1>
+    <div class="period-filter">
+      <label for="statsPeriode">Periode</label>
+      <select id="statsPeriode" [(ngModel)]="periodeSelectionnee" (change)="changerPeriode()">
+        <option value="mois">Ce mois</option>
+        <option value="trimestre">Ce trimestre</option>
+        <option value="annee">Cette annee</option>
+      </select>
+    </div>
+  </section>
 
-  <!-- FILTRE -->
-  <div class="filters">
-    <label>Période :</label>
-    <select [(ngModel)]="periodeSelectionnee" (change)="changerPeriode()">
-      <option value="mois">Ce Mois</option>
-      <option value="trimestre">Ce Trimestre</option>
-      <option value="annee">Cette Année</option>
-    </select>
-  </div>
-
-  <!-- KPI -->
-  <div class="kpi-row">
-
-    <div class="kpi-card">
+  <section class="kpi-row">
+    <article class="kpi-card">
       <span>Chiffre d'affaires</span>
-      <h2>{{ kpi.chiffreAffaires | number }} FCFA</h2>
+      <strong>{{ kpi.chiffreAffaires | number }} FCFA</strong>
       <small [ngClass]="variationCA >= 0 ? 'positive' : 'negative'">
-        {{ variationCA }} %
+        Variation: {{ variationCA }} %
       </small>
-    </div>
+    </article>
 
-    <div class="kpi-card">
+    <article class="kpi-card">
       <span>Factures</span>
-      <h2>{{ kpi.totalFactures }}</h2>
-    </div>
+      <strong>{{ kpi.totalFactures }}</strong>
+      <small>Total sur la periode</small>
+    </article>
 
-    <div class="kpi-card">
+    <article class="kpi-card">
       <span>Produits vendus</span>
-      <h2>{{ kpi.totalQuantiteVendue }}</h2>
-    </div>
+      <strong>{{ kpi.totalQuantiteVendue }}</strong>
+      <small>Volume global</small>
+    </article>
+  </section>
 
-  </div>
-
-  <!-- SECTION PRINCIPALE -->
-  <div class="main-section">
-
-    <!-- Evolution -->
-    <div class="chart-container">
-      <h3>Évolution des ventes</h3>
+  <section class="chart-grid">
+    <article class="panel">
+      <h3>Evolution des ventes</h3>
       <canvas id="monthlyChart"></canvas>
-    </div>
+    </article>
 
-    <!-- Top 5 Graph -->
-    <div class="chart-container">
-      <h3>Top 5 Produits</h3>
+    <article class="panel">
+      <h3>Top 5 produits</h3>
       <canvas id="topProductsChart"></canvas>
-    </div>
+    </article>
+  </section>
 
-  </div>
-
-  <!-- Liste Produits -->
-  <div class="top-products-list">
+  <section class="panel top-list">
     <h3>Produits les plus vendus</h3>
+    <article *ngFor="let produit of topProduits" class="product-row">
+      <div class="row-head">
+        <span>{{ produit.nom }}</span>
+        <strong>{{ produit.quantite }} unites</strong>
+      </div>
 
-    <div *ngFor="let produit of topProduits" class="product-row">
-      <span>{{ produit.nom }}</span>
-      <strong>{{ produit.quantite }} unités</strong>
-
-      <div class="progress-bar">
-        <div class="progress-fill"
-             [style.width.%]="(produit.quantite / topProduits[0]?.quantite) * 100">
+      <div class="progress">
+        <div
+          class="progress-bar"
+          [style.width.%]="(produit.quantite / topProduits[0]?.quantite) * 100">
         </div>
       </div>
-    </div>
-  </div>
-
+    </article>
+  </section>
 </div>

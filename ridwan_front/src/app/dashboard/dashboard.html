@@ -1,119 +1,120 @@
-<div class="dashboard">
+<div class="dashboard-page">
+  <section class="hero">
+    <div>
+      <h1>Pilotage commercial</h1>
+      <p>Vue globale des ventes, performance produits et etat stock.</p>
+    </div>
 
-  <!-- HEADER -->
-  <div class="header">
-    <h1>Dashboard Analytique</h1>
+    <div class="hero-actions">
+      <label for="periodeSelect">Periode</label>
+      <select
+        id="periodeSelect"
+        [(ngModel)]="periodeSelectionnee"
+        (change)="changerPeriode()">
+        <option value="mois">Ce mois</option>
+        <option value="trimestre">Ce trimestre</option>
+        <option value="annee">Cette annee</option>
+      </select>
+    </div>
+  </section>
 
-    <select [(ngModel)]="periodeSelectionnee"
-            (change)="changerPeriode()">
-      <option value="mois">Ce Mois</option>
-      <option value="trimestre">Ce Trimestre</option>
-      <option value="annee">Cette Année</option>
-    </select>
-  </div>
-
-  <!-- KPI -->
-  <div class="kpi-grid">
-
-    <div class="kpi-card primary">
+  <section class="kpi-grid">
+    <article class="kpi-card ca">
       <span>Chiffre d'affaires</span>
-      <h2>{{ kpi.chiffreAffaires | number }} FCFA</h2>
+      <strong>{{ kpi.chiffreAffaires | number }} FCFA</strong>
       <canvas id="sparkCA"></canvas>
-    </div>
+    </article>
 
-    <div class="kpi-card success">
+    <article class="kpi-card panier">
       <span>Panier moyen</span>
-      <h2>{{ kpi.panierMoyen | number }} FCFA</h2>
+      <strong>{{ kpi.panierMoyen | number }} FCFA</strong>
       <canvas id="sparkPanier"></canvas>
-    </div>
+    </article>
 
-    <div class="kpi-card info">
+    <article class="kpi-card volume">
       <span>Indice ventes</span>
-      <h2>{{ kpi.indiceVentes }}</h2>
+      <strong>{{ kpi.indiceVentes | number }}</strong>
       <canvas id="sparkIndice"></canvas>
-    </div>
+    </article>
 
-    <div class="kpi-card warning">
+    <article class="kpi-card croissance">
       <span>Croissance annuelle</span>
-      <h2>{{ kpi.croissanceAnnuelle }} %</h2>
+      <strong>{{ kpi.croissanceAnnuelle }} %</strong>
       <canvas id="sparkCroissance"></canvas>
-    </div>
+    </article>
+  </section>
 
-  </div>
+  <section class="summary-grid">
+    <article class="card summary-card">
+      <h3>Resume executif</h3>
+      <ul>
+        <li>
+          <span>Variation CA</span>
+          <strong [ngClass]="variationCA >= 0 ? 'up' : 'down'">{{ variationCA }} %</strong>
+        </li>
+        <li>
+          <span>Jour le plus performant</span>
+          <strong>{{ meilleurJour }}</strong>
+        </li>
+        <li>
+          <span>Categorie leader</span>
+          <strong>{{ categorieLeader }}</strong>
+        </li>
+        <li>
+          <span>Produits critiques</span>
+          <strong>{{ alertesCritiques }}</strong>
+        </li>
+      </ul>
+    </article>
 
-  <!-- RESUME EXECUTIF -->
-  <div class="resume-card">
-    <h3>Résumé Exécutif</h3>
-
-    <ul>
-      <li>📊 CA : {{ kpi.chiffreAffaires | number }} FCFA</li>
-
-      <li [ngClass]="variationCA >= 0 ? 'positive' : 'negative'">
-        {{ variationCA >= 0 ? '📈' : '📉' }}
-        Variation vs mois précédent : {{ variationCA }} %
-      </li>
-
-      <li>🔥 Jour le plus performant : {{ meilleurJour }}</li>
-      <li>🏆 Catégorie leader : {{ categorieLeader }}</li>
-      <li>⚠ Produits critiques : {{ alertesCritiques }}</li>
-    </ul>
-  </div>
-
-  <!-- GRAPHIQUES -->
-  <div class="charts">
-
-    <div class="chart-card">
-      <h3>Evolution CA</h3>
+    <article class="card chart-card">
+      <h3>Evolution du chiffre d'affaires</h3>
       <canvas id="monthlyChart"></canvas>
-    </div>
+    </article>
+  </section>
 
-    <div class="chart-card">
-      <h3>Mois vs Mois Précédent</h3>
+  <section class="charts-grid">
+    <article class="card chart-card">
+      <h3>Mois actuel vs precedent</h3>
       <canvas id="compareChart"></canvas>
-    </div>
-    
-    <div class="chart-card">
-      <h3>Top Produits</h3>
+    </article>
+
+    <article class="card chart-card">
+      <h3>Top produits</h3>
       <canvas id="topProductsChart"></canvas>
-    </div>
+    </article>
 
-    <div class="chart-card">
-      <h3>CA par Catégorie</h3>
+    <article class="card chart-card">
+      <h3>CA par categorie</h3>
       <canvas id="categoryChart"></canvas>
-    </div>
+    </article>
 
-  </div>
-
-  <!-- STOCK -->
-  <div class="stock-section">
-
-    <div class="chart-card">
-      <h3>Répartition du Stock</h3>
+    <article class="card chart-card">
+      <h3>Repartition stock</h3>
       <canvas id="stockChart"></canvas>
+    </article>
+  </section>
+
+  <section class="card stock-alerts">
+    <div class="stock-header">
+      <h3>Alertes stock</h3>
+      <span>{{ alertes.length }} alerte(s)</span>
     </div>
 
-    <div class="alert-card">
-      <h3>Alertes Stock</h3>
-
-      <div *ngFor="let a of alertes" class="alert-item">
-
-        <span>
-          {{ a.produit }}
-          <span class="badge"
-                [ngClass]="a.critique ? 'badge-danger' : 'badge-warning'">
-            {{ a.critique ? 'RUPTURE' : 'CRITIQUE' }}
-          </span>
+    <div *ngIf="alertes.length; else noAlert" class="alert-list">
+      <article *ngFor="let a of alertes" class="alert-item">
+        <div>
+          <strong>{{ a.produit }}</strong>
+          <small>Stock restant: {{ a.stock }}</small>
+        </div>
+        <span class="badge" [ngClass]="a.critique ? 'danger' : 'warning'">
+          {{ a.critique ? 'Rupture' : 'Critique' }}
         </span>
-
-        <strong>{{ a.stock }}</strong>
-      </div>
-
-      <div *ngIf="!alertes.length" class="no-alert">
-        Aucun stock critique 🎉
-      </div>
-
+      </article>
     </div>
 
-  </div>
-
+    <ng-template #noAlert>
+      <div class="empty-state">Aucune alerte critique pour le moment.</div>
+    </ng-template>
+  </section>
 </div>

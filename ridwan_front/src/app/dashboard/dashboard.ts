@@ -1,5 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Chart } from 'chart.js/auto';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FacturesService } from '../factures/factures.service';
 import { ProduitsService } from '../produits/produits.service';
 import { VentesService } from '../ventes/ventes.service';
@@ -11,8 +10,7 @@ import { VentesService } from '../ventes/ventes.service';
   standalone: false,
 })
 export class DashboardComponent implements OnInit {
-
-  periodeSelectionnee: string = 'mois';
+  periodeSelectionnee = 'mois';
 
   produits: any[] = [];
   factures: any[] = [];
@@ -29,13 +27,12 @@ export class DashboardComponent implements OnInit {
     croissanceAnnuelle: 0
   };
 
-  variationCA: number = 0;
-  meilleurJour: string = '-';
-  categorieLeader: string = '-';
-  alertesCritiques: number = 0;
+  variationCA = 0;
+  meilleurJour = '-';
+  categorieLeader = '-';
+  alertesCritiques = 0;
 
   alertes: any[] = [];
-  stockCategories: any[] = [];
   topProduits: any[] = [];
 
   monthlyChart: any;
@@ -49,6 +46,9 @@ export class DashboardComponent implements OnInit {
   sparklinePanier: any;
   sparklineCroissance: any;
 
+  private ChartCtor: any = null;
+  private chartLoadPromise: Promise<void> | null = null;
+
   constructor(
     private factureSvc: FacturesService,
     private produitSvc: ProduitsService,
@@ -56,36 +56,51 @@ export class DashboardComponent implements OnInit {
     private cd: ChangeDetectorRef
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+    void this.ensureChartLibrary().then(() => this.updateStats());
     this.loadData();
   }
 
-  loadData() {
-    this.produitSvc.getProduits().subscribe(p => {
-      this.produits = p;
+  private ensureChartLibrary(): Promise<void> {
+    if (this.ChartCtor) {
+      return Promise.resolve();
+    }
+
+    if (!this.chartLoadPromise) {
+      this.chartLoadPromise = import('chart.js/auto').then((mod) => {
+        this.ChartCtor = mod.Chart;
+      });
+    }
+
+    return this.chartLoadPromise;
+  }
+
+  loadData(): void {
+    this.produitSvc.getProduits().subscribe((p) => {
+      this.produits = p || [];
       this.analyserProduits();
       this.updateStats();
       this.cd.detectChanges();
     });
 
-    this.factureSvc.getFactures().subscribe(f => {
-      this.factures = f;
+    this.factureSvc.getFactures().subscribe((f) => {
+      this.factures = f || [];
       this.updateStats();
       this.cd.detectChanges();
     });
 
-    this.venteSvc.getVentes().subscribe(v => {
-      this.ventes = v;
+    this.venteSvc.getVentes().subscribe((v) => {
+      this.ventes = v || [];
       this.updateStats();
       this.cd.detectChanges();
     });
   }
 
-  changerPeriode() {
+  changerPeriode(): void {
     this.updateStats();
   }
 
-  updateStats() {
+  updateStats(): void {
     if (!this.factures.length) return;
 
     this.filtrerDonnees();
@@ -102,91 +117,80 @@ export class DashboardComponent implements OnInit {
     this.genererResumeExecutif();
   }
 
-  filtrerDonnees() {
+  filtrerDonnees(): void {
     const now = new Date();
-
-    this.facturesFiltrees = this.factures.filter(f =>
+    this.facturesFiltrees = this.factures.filter((f) =>
       this.estDansPeriode(new Date(f.created_at), now)
     );
-
-    this.ventesFiltrees = this.ventes.filter(v =>
+    this.ventesFiltrees = this.ventes.filter((v) =>
       this.estDansPeriode(new Date(v.created_at), now)
     );
   }
 
   estDansPeriode(date: Date, now: Date): boolean {
-    if (this.periodeSelectionnee === 'mois')
-      return date.getMonth() === now.getMonth() &&
-             date.getFullYear() === now.getFullYear();
+    if (this.periodeSelectionnee === 'mois') {
+      return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+    }
 
-    if (this.periodeSelectionnee === 'annee')
+    if (this.periodeSelectionnee === 'annee') {
       return date.getFullYear() === now.getFullYear();
+    }
 
     return true;
   }
 
-  calculerKpi() {
-    this.kpi.chiffreAffaires =
-      this.facturesFiltrees.reduce((s, f) => s + Number(f.total_prix), 0);
-
-    this.kpi.totalQuantiteVendue =
-      this.ventesFiltrees.reduce((s, v) => s + Number(v.quantite), 0);
-
-    this.kpi.panierMoyen =
-      this.facturesFiltrees.length > 0
-        ? Math.round(this.kpi.chiffreAffaires / this.facturesFiltrees.length)
-        : 0;
-
+  calculerKpi(): void {
+    this.kpi.chiffreAffaires = this.facturesFiltrees.reduce((s, f) => s + Number(f.total_prix), 0);
+    this.kpi.totalQuantiteVendue = this.ventesFiltrees.reduce((s, v) => s + Number(v.quantite), 0);
+    this.kpi.panierMoyen = this.facturesFiltrees.length
+      ? Math.round(this.kpi.chiffreAffaires / this.facturesFiltrees.length)
+      : 0;
     this.kpi.indiceVentes = this.kpi.totalQuantiteVendue;
   }
 
-  calculerVariation() {
+  calculerVariation(): void {
     const now = new Date();
-    const moisPrecedent = new Date(now.getFullYear(), now.getMonth()-1);
+    const moisPrecedent = new Date(now.getFullYear(), now.getMonth() - 1);
 
-    const precedent = this.factures.filter(f => {
+    const precedent = this.factures.filter((f) => {
       const d = new Date(f.created_at);
-      return d.getMonth() === moisPrecedent.getMonth() &&
-             d.getFullYear() === moisPrecedent.getFullYear();
+      return d.getMonth() === moisPrecedent.getMonth() && d.getFullYear() === moisPrecedent.getFullYear();
     });
 
-    const totalPrec = precedent.reduce((s,f)=>s+Number(f.total_prix),0);
-
+    const totalPrec = precedent.reduce((s, f) => s + Number(f.total_prix), 0);
     this.variationCA = totalPrec === 0
       ? 0
-      : Math.round(((this.kpi.chiffreAffaires-totalPrec)/totalPrec)*100);
+      : Math.round(((this.kpi.chiffreAffaires - totalPrec) / totalPrec) * 100);
   }
 
-  calculerCroissanceAnnuelle() {
+  calculerCroissanceAnnuelle(): void {
     const now = new Date();
     const currentYear = now.getFullYear();
     const prevYear = currentYear - 1;
 
     const totalActuel = this.factures
-      .filter(f => new Date(f.created_at).getFullYear() === currentYear)
-      .reduce((s,f)=>s+Number(f.total_prix),0);
+      .filter((f) => new Date(f.created_at).getFullYear() === currentYear)
+      .reduce((s, f) => s + Number(f.total_prix), 0);
 
     const totalPrec = this.factures
-      .filter(f => new Date(f.created_at).getFullYear() === prevYear)
-      .reduce((s,f)=>s+Number(f.total_prix),0);
+      .filter((f) => new Date(f.created_at).getFullYear() === prevYear)
+      .reduce((s, f) => s + Number(f.total_prix), 0);
 
-    this.kpi.croissanceAnnuelle =
-      totalPrec === 0 ? 0 :
-      Math.round(((totalActuel-totalPrec)/totalPrec)*100);
+    this.kpi.croissanceAnnuelle = totalPrec === 0
+      ? 0
+      : Math.round(((totalActuel - totalPrec) / totalPrec) * 100);
   }
 
-  calculerJourPerformant() {
-    const map: any = {};
-
-    this.facturesFiltrees.forEach(f => {
+  calculerJourPerformant(): void {
+    const map: Record<string, number> = {};
+    this.facturesFiltrees.forEach((f) => {
       const jour = new Date(f.created_at).getDate();
       map[jour] = (map[jour] || 0) + Number(f.total_prix);
     });
 
     let max = 0;
     let best = '-';
-
-    Object.keys(map).forEach(j => {
+    Object.keys(map).forEach((j) => {
       if (map[j] > max) {
         max = map[j];
         best = j;
@@ -196,96 +200,100 @@ export class DashboardComponent implements OnInit {
     this.meilleurJour = best !== '-' ? `Jour ${best}` : '-';
   }
 
-  analyserProduits() {
+  analyserProduits(): void {
     this.alertes = this.produits
-      .filter(p => p.quantite <= 15)
-      .map(p => ({
+      .filter((p) => Number(p.quantite) <= 15)
+      .map((p) => ({
         produit: p.produit,
-        stock: p.quantite,
-        critique: p.quantite === 0
+        stock: Number(p.quantite),
+        critique: Number(p.quantite) === 0
       }));
   }
 
-  genererResumeExecutif() {
-    this.alertesCritiques =
-      this.alertes.filter(a => a.critique).length;
+  genererResumeExecutif(): void {
+    this.alertesCritiques = this.alertes.filter((a) => a.critique).length;
   }
 
-  genererGraphique() {
-    if(this.monthlyChart) this.monthlyChart.destroy();
+  genererGraphique(): void {
+    const Chart = this.ChartCtor;
+    if (!Chart) return;
 
-    const data:any={};
-    this.facturesFiltrees.forEach(f=>{
-      const jour=new Date(f.created_at).getDate();
-      data[jour]=(data[jour]||0)+Number(f.total_prix);
+    if (this.monthlyChart) this.monthlyChart.destroy();
+
+    const data: Record<string, number> = {};
+    this.facturesFiltrees.forEach((f) => {
+      const jour = new Date(f.created_at).getDate();
+      data[jour] = (data[jour] || 0) + Number(f.total_prix);
     });
 
-    this.monthlyChart=new Chart("monthlyChart",{
-      type:'line',
-      data:{
-        labels:Object.keys(data),
-        datasets:[{
-          data:Object.values(data),
-          borderColor:'#2563eb',
-          backgroundColor:'#2563eb33',
-          fill:true,
-          tension:0.4
+    this.monthlyChart = new Chart('monthlyChart', {
+      type: 'line',
+      data: {
+        labels: Object.keys(data),
+        datasets: [{
+          data: Object.values(data),
+          borderColor: '#2563eb',
+          backgroundColor: '#2563eb33',
+          fill: true,
+          tension: 0.4
         }]
       }
     });
   }
 
-  genererComparaisonMois() {
+  genererComparaisonMois(): void {
+    const Chart = this.ChartCtor;
+    if (!Chart) return;
+
     if (this.compareChart) this.compareChart.destroy();
 
     const now = new Date();
-    const moisPrecedent = new Date(now.getFullYear(), now.getMonth()-1);
-
+    const moisPrecedent = new Date(now.getFullYear(), now.getMonth() - 1);
     const actuel = this.kpi.chiffreAffaires;
 
     const precedent = this.factures
-      .filter(f=>{
-        const d=new Date(f.created_at);
-        return d.getMonth()===moisPrecedent.getMonth()
-        && d.getFullYear()===moisPrecedent.getFullYear();
+      .filter((f) => {
+        const d = new Date(f.created_at);
+        return d.getMonth() === moisPrecedent.getMonth() && d.getFullYear() === moisPrecedent.getFullYear();
       })
-      .reduce((s,f)=>s+Number(f.total_prix),0);
+      .reduce((s, f) => s + Number(f.total_prix), 0);
 
-    this.compareChart=new Chart("compareChart",{
-      type:'bar',
-      data:{
-        labels:['Mois Précédent','Mois Actuel'],
-        datasets:[{
-          data:[precedent,actuel],
-          backgroundColor:['#94a3b8','#2563eb']
+    this.compareChart = new Chart('compareChart', {
+      type: 'bar',
+      data: {
+        labels: ['Mois precedent', 'Mois actuel'],
+        datasets: [{
+          data: [precedent, actuel],
+          backgroundColor: ['#94a3b8', '#2563eb']
         }]
       }
     });
   }
 
-  genererCAParCategorie() {
+  genererCAParCategorie(): void {
+    const Chart = this.ChartCtor;
+    if (!Chart) return;
+
     if (this.categoryChart) this.categoryChart.destroy();
-    
-    const map: any = {};
-    
-    this.ventesFiltrees.forEach(v => {
-      const produit = this.produits.find(p => p.produit === v.produit);
+
+    const map: Record<string, number> = {};
+    this.ventesFiltrees.forEach((v) => {
+      const produit = this.produits.find((p) => p.produit === v.produit);
       if (!produit) return;
-    
-      if (!map[produit.categorie]) map[produit.categorie] = 0;
-      map[produit.categorie] += Number(v.quantite) * Number(produit.prix);
+      const categorie = produit.categorie || 'Sans categorie';
+      map[categorie] = (map[categorie] || 0) + Number(v.quantite) * Number(produit.prix);
     });
-  
+
     const labels = Object.keys(map);
     const data = Object.values(map);
-  
-    this.categoryChart = new Chart("categoryChart", {
-      type: 'bar', // 🔥 changé ici
+
+    this.categoryChart = new Chart('categoryChart', {
+      type: 'bar',
       data: {
-        labels: labels,
+        labels,
         datasets: [{
-          label: 'Chiffre d\'affaires (€)',
-          data: data,
+          label: "Chiffre d'affaires",
+          data,
           backgroundColor: '#2563eb'
         }]
       },
@@ -296,93 +304,75 @@ export class DashboardComponent implements OnInit {
         },
         scales: {
           y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'CA (€)'
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Catégories'
-            }
+            beginAtZero: true
           }
         }
       }
     });
-  
+
     let max = 0;
     let leader = '-';
-    labels.forEach((l: any) => {
+    labels.forEach((l) => {
       if (map[l] > max) {
         max = map[l];
         leader = l;
       }
     });
-  
     this.categorieLeader = leader;
   }
 
-  genererTopProduits() {
-    const compteur:any={};
+  genererTopProduits(): void {
+    const Chart = this.ChartCtor;
+    if (!Chart) return;
 
-    this.ventesFiltrees.forEach(v=>{
-      compteur[v.produit]=(compteur[v.produit]||0)+Number(v.quantite);
+    const compteur: Record<string, number> = {};
+    this.ventesFiltrees.forEach((v) => {
+      compteur[v.produit] = (compteur[v.produit] || 0) + Number(v.quantite);
     });
 
-    const arr=Object.keys(compteur).map(nom=>({
-      nom,quantite:compteur[nom]
+    const arr = Object.keys(compteur).map((nom) => ({
+      nom,
+      quantite: compteur[nom]
     }));
+    arr.sort((a, b) => b.quantite - a.quantite);
+    this.topProduits = arr.slice(0, 5);
 
-    arr.sort((a,b)=>b.quantite-a.quantite);
-    this.topProduits=arr.slice(0,5);
+    if (this.topProductsChart) this.topProductsChart.destroy();
 
-    if(this.topProductsChart) this.topProductsChart.destroy();
-
-    this.topProductsChart=new Chart("topProductsChart",{
-      type:'bar',
-      data:{
-        labels:this.topProduits.map(p=>p.nom),
-        datasets:[{
-          data:this.topProduits.map(p=>p.quantite),
-          backgroundColor:'#16a34a'
+    this.topProductsChart = new Chart('topProductsChart', {
+      type: 'bar',
+      data: {
+        labels: this.topProduits.map((p) => p.nom),
+        datasets: [{
+          data: this.topProduits.map((p) => p.quantite),
+          backgroundColor: '#16a34a'
         }]
       }
     });
   }
 
-  genererRepartitionStock() {
+  genererRepartitionStock(): void {
+    const Chart = this.ChartCtor;
+    if (!Chart) return;
 
     if (this.stockChart) this.stockChart.destroy();
 
-    const map: any = {};
-
-    // Regrouper le stock par catégorie
-    this.produits.forEach(p => {
-      if (!map[p.categorie]) {
-        map[p.categorie] = 0;
-      }
-      map[p.categorie] += Number(p.quantite);
+    const map: Record<string, number> = {};
+    this.produits.forEach((p) => {
+      const categorie = p.categorie || 'Sans categorie';
+      map[categorie] = (map[categorie] || 0) + Number(p.quantite);
     });
 
     const labels = Object.keys(map);
     const data = Object.values(map);
 
-    this.stockChart = new Chart("stockChart", {
+    this.stockChart = new Chart('stockChart', {
       type: 'doughnut',
       data: {
-        labels: labels,
+        labels,
         datasets: [{
-          data: data,
-          backgroundColor: [
-            '#2563eb',
-            '#16a34a',
-            '#f59e0b',
-            '#dc2626',
-            '#0ea5e9',
-            '#9333ea'
-          ]
+          data,
+          backgroundColor: ['#2563eb', '#16a34a', '#f59e0b', '#dc2626', '#0ea5e9', '#9333ea']
         }]
       },
       options: {
@@ -390,11 +380,10 @@ export class DashboardComponent implements OnInit {
           legend: { position: 'bottom' },
           tooltip: {
             callbacks: {
-              label: function(context) {
-                const total = context.dataset.data
-                  .reduce((a:any,b:any)=>a+b,0);
+              label: (context: any) => {
+                const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
                 const value = context.parsed;
-                const percent = ((value/total)*100).toFixed(1);
+                const percent = ((value / total) * 100).toFixed(1);
                 return `${context.label}: ${value} (${percent}%)`;
               }
             }
@@ -404,42 +393,47 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  genererSparklines() {
+  genererSparklines(): void {
+    const Chart = this.ChartCtor;
+    if (!Chart) return;
 
-    const caData = this.facturesFiltrees.map(f => Number(f.total_prix));
-    const quantiteData = this.ventesFiltrees.map(v => Number(v.quantite));
-    const panierData = caData.map((v,i)=> v/(i+1));
-    const croissanceData = caData.map((v,i)=> i>0?v-caData[i-1]:0);
+    const caData = this.facturesFiltrees.map((f) => Number(f.total_prix));
+    const quantiteData = this.ventesFiltrees.map((v) => Number(v.quantite));
+    const panierData = caData.map((v, i) => v / (i + 1));
+    const croissanceData = caData.map((v, i) => (i > 0 ? v - caData[i - 1] : 0));
 
     if (this.sparklineCA) this.sparklineCA.destroy();
     if (this.sparklineIndice) this.sparklineIndice.destroy();
     if (this.sparklinePanier) this.sparklinePanier.destroy();
     if (this.sparklineCroissance) this.sparklineCroissance.destroy();
 
-    this.sparklineCA = this.spark("sparkCA", caData);
-    this.sparklineIndice = this.spark("sparkIndice", quantiteData);
-    this.sparklinePanier = this.spark("sparkPanier", panierData);
-    this.sparklineCroissance = this.spark("sparkCroissance", croissanceData);
+    this.sparklineCA = this.spark('sparkCA', caData);
+    this.sparklineIndice = this.spark('sparkIndice', quantiteData);
+    this.sparklinePanier = this.spark('sparkPanier', panierData);
+    this.sparklineCroissance = this.spark('sparkCroissance', croissanceData);
   }
 
-  spark(id:string,data:number[]){
-    return new Chart(id,{
-      type:'line',
-      data:{
-        labels:data.map((_,i)=>i),
-        datasets:[{
-          data:data,
-          borderColor:'#ffffff',
-          backgroundColor:'#ffffff33',
-          fill:true,
-          tension:0.4,
-          pointRadius:0
+  spark(id: string, data: number[]): any {
+    const Chart = this.ChartCtor;
+    if (!Chart) return null;
+
+    return new Chart(id, {
+      type: 'line',
+      data: {
+        labels: data.map((_, i) => i),
+        datasets: [{
+          data,
+          borderColor: '#ffffff',
+          backgroundColor: '#ffffff33',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0
         }]
       },
-      options:{
-        responsive:true,
-        plugins:{ legend:{ display:false }},
-        scales:{ x:{ display:false }, y:{ display:false }}
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { x: { display: false }, y: { display: false } }
       }
     });
   }

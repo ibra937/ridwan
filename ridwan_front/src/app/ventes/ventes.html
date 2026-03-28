@@ -1,28 +1,42 @@
-<div class="ventes-container">
-  <h2>Liste des Factures</h2>
+<div class="ventes-page">
+  <section class="header-card">
+    <div>
+      <h2>Historique des ventes</h2>
+      <p>Consultation rapide des factures generees.</p>
+    </div>
+    <input
+      type="text"
+      [(ngModel)]="search"
+      (input)="appliquerFiltres()"
+      placeholder="Rechercher numero ou client" />
+  </section>
 
   <div *ngIf="loading" class="loading">
-    <i class="fa-solid fa-spinner fa-spin"></i> Chargement...
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    Chargement...
   </div>
 
-  <div class="factures-list" *ngIf="!loading && factures.length > 0">
-    <div 
-      class="facture-card" 
-      *ngFor="let f of factures" 
-      (click)="voirFacture(f)"
-    >
-      <div class="facture-header">
-        <span><strong>Numéro :</strong> {{ f.numero_facture }}</span>
-        <span><strong>Total :</strong> {{ f.total_prix }} FCFA</span>
+  <section class="cards" *ngIf="!loading && facturesFiltrees.length">
+    <article
+      class="facture-card"
+      *ngFor="let f of facturesFiltrees"
+      (click)="voirFacture(f)">
+      <div class="line">
+        <span>Numero</span>
+        <strong>{{ f.numero_facture }}</strong>
       </div>
-      <div class="facture-client">
-        <strong>Client :</strong> {{ f.client || 'Non défini' }}
+      <div class="line">
+        <span>Client</span>
+        <strong>{{ f.client || 'Comptoir' }}</strong>
       </div>
-    </div>
-  </div>
+      <div class="line">
+        <span>Total</span>
+        <strong class="amount">{{ f.total_prix | number }} FCFA</strong>
+      </div>
+    </article>
+  </section>
 
-  <div *ngIf="!loading && factures.length === 0" class="empty">
-    <i class="fa-solid fa-file-invoice"></i>
+  <div *ngIf="!loading && !facturesFiltrees.length" class="empty">
     Aucune facture disponible.
   </div>
 </div>
